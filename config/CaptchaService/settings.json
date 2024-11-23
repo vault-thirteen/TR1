@@ -1,0 +1,138 @@
+{
+  "service": {
+    "shortName": "CaptchaService",
+    "fullName": "Captcha Service",
+    "components": [
+      {
+        "type": "system",
+        "parameters": [
+          {
+            "name": "isDebugMode",
+            "type": "boolean",
+            "value": true
+          }
+        ]
+      },
+      {
+        "type": "captcha",
+        "parameters": [
+          {
+            "name": "isImageStorageUsed",
+            "type": "boolean",
+            "value": true
+          },
+          {
+            "name": "isImageServerEnabled",
+            "type": "boolean",
+            "value": true
+          },
+          {
+            "name": "isImageCleanupAtStartUsed",
+            "type": "boolean",
+            "value": true
+          },
+          {
+            "name": "isStorageCleaningEnabled",
+            "type": "boolean",
+            "value": true
+          },
+          {
+            "name": "imagesFolder",
+            "type": "string",
+            "value": "H:\\Temp\\3\\rcs_img"
+          },
+          {
+            "name": "imageWidth",
+            "type": "integer",
+            "value": 256
+          },
+          {
+            "name": "imageHeight",
+            "type": "integer",
+            "value": 256
+          },
+          {
+            "name": "filesCountToClean",
+            "type": "integer",
+            "value": 10
+          },
+          {
+            "name": "fileCacheSizeLimit",
+            "type": "integer",
+            "value": 100
+          },
+          {
+            "name": "fileCacheVolumeLimit",
+            "type": "integer",
+            "value": 2000000
+          },
+          {
+            "name": "fileCacheItemTtl",
+            "type": "integer",
+            "value": 180
+          },
+          {
+            "name": "recordCacheSizeLimit",
+            "type": "integer",
+            "value": 100
+          },
+          {
+            "name": "recordCacheItemTtl",
+            "type": "integer",
+            "value": 180
+          }
+        ]
+      }
+    ],
+    "servers": [
+      {
+        "type": "internal",
+        "protocol": "https",
+        "parameters": [
+          {
+            "name": "host",
+            "type": "string",
+            "value": "localhost"
+          },
+          {
+            "name": "port",
+            "type": "integer",
+            "value": 2003
+          },
+          {
+            "name": "certFile",
+            "type": "string",
+            "value": "cert\\CaptchaService\\server-cert.pem"
+          },
+          {
+            "name": "keyFile",
+            "type": "string",
+            "value": "cert\\CaptchaService\\server-key.pem"
+          }
+        ]
+      },
+      {
+        "type": "external",
+        "protocol": "http",
+        "parameters": [
+          {
+            "name": "host",
+            "type": "string",
+            "value": "localhost"
+          },
+          {
+            "name": "port",
+            "type": "integer",
+            "value": 2004
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "value": "RCS"
+          }
+        ]
+      }
+    ],
+    "clients": []
+  }
+}
