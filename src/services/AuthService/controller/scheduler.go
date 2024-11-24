@@ -98,3 +98,101 @@ func (c *Controller) getNextOutdatedLogInRequest(edgeTime time.Time) (lir *cm.Lo
 
 	return &lirs[0], nil
 }
+
+func (c *Controller) RemoveOutdatedLogOutRequests() (err error) {
+	lorTtl := c.far.systemSettings.GetParameterAsInt(ccp.LogOutRequestTtl)
+	edgeTime := time.Now().Add(-time.Duration(lorTtl) * time.Second)
+	dbC := dbc.NewDbController(c.GetDb())
+	var isDebugMode = c.far.systemSettings.GetParameterAsBool(ccp.IsDebugMode)
+
+	var lor *cm.LogOutRequest
+	for {
+		lor, err = c.getNextOutdatedLogOutRequest(edgeTime)
+		if err != nil {
+			return err
+		}
+
+		if lor == nil {
+			break
+		}
+
+		if isDebugMode {
+			fmt.Println("removing outdated log-out request. RequestId:", lor.RequestId)
+		}
+		err = dbC.DeleteOldLogOutRequest(lor)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+func (c *Controller) getNextOutdatedLogOutRequest(edgeTime time.Time) (lor *cm.LogOutRequest, err error) {
+	dbC := dbc.NewDbController(c.GetDb())
+
+	var lors []cm.LogOutRequest
+	lors, err = dbC.GetFirstOutdatedLogOutRequest(edgeTime)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(lors) != 1 {
+		return nil, nil
+	}
+
+	return &lors[0], nil
+}
+
+func (c *Controller) RemoveOutdatedSessions() (err error) {
+	sessionTtl := c.far.systemSettings.GetParameterAsInt(ccp.SessionMaxDuration)
+	edgeTime := time.Now().Add(-time.Duration(sessionTtl) * time.Second)
+	dbC := dbc.NewDbController(c.GetDb())
+	var isDebugMode = c.far.systemSettings.GetParameterAsBool(ccp.IsDebugMode)
+
+	var s *cm.Session
+	for {
+		s, err = c.getNextOutdatedSession(edgeTime)
+		if err != nil {
+			return err
+		}
+
+		if s == nil {
+			break
+		}
+
+		if isDebugMode {
+			fmt.Println("removing outdated session. Id:", s.Id)
+		}
+
+		// Delete session.
+		err = dbC.DeleteOldSession(s)
+		if err != nil {
+			return err
+		}
+
+		// Journaling.
+		logEvent := cm.NewLogEvent(cm.LogEvent_Type_LogOutByTimeout, s.UserId, nil, nil)
+
+		err = dbC.CreateLogEvent(logEvent)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+func (c *Controller) getNextOutdatedSession(edgeTime time.Time) (s *cm.Session, err error) {
+	dbC := dbc.NewDbController(c.GetDb())
+
+	var ss []cm.Session
+	ss, err = dbC.GetFirstOutdatedSession(edgeTime)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(ss) != 1 {
+		return nil, nil
+	}
+
+	return &ss[0], nil
+}

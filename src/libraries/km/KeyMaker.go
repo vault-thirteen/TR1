@@ -3,18 +3,19 @@ package km
 import (
 	"crypto/rsa"
 	"errors"
-	"fmt"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
-	WebTokenField_UserId    = "userId"
-	WebTokenField_SessionId = "sessionId"
-	TokenHeader_Alg         = "alg"
-	TokenAlg_PS512          = "PS512" // RSA-PSS.
-	TokenAlg_RS512          = "RS512" // RSA.
+	WebTokenField_UserId         = "userId"
+	WebTokenField_SessionId      = "sessionId"
+	WebTokenField_ExpirationTime = "exp"
+	TokenHeader_Alg              = "alg"
+	TokenAlg_PS512               = "PS512" // RSA-PSS.
+	TokenAlg_RS512               = "RS512" // RSA.
 )
 
 const (
@@ -62,10 +63,11 @@ func New(signingMethodName string, privateKeyFilePath string, publicKeyFilePath 
 	return km, nil
 }
 
-func (km *KeyMaker) MakeJWToken(userId int, sessionId int) (tokenString string, err error) {
+func (km *KeyMaker) MakeJWToken(userId int, sessionId int, expirationTime time.Time) (tokenString string, err error) {
 	claims := jwt.MapClaims{
-		WebTokenField_UserId:    userId,
-		WebTokenField_SessionId: sessionId,
+		WebTokenField_UserId:         userId,
+		WebTokenField_SessionId:      sessionId,
+		WebTokenField_ExpirationTime: expirationTime.Unix(),
 	}
 
 	token := jwt.NewWithClaims(km.signingMethod, claims, nil)
@@ -80,67 +82,17 @@ func (km *KeyMaker) MakeJWToken(userId int, sessionId int) (tokenString string, 
 }
 
 func (km *KeyMaker) ValidateToken(tokenString string) (userId int, sessionId int, err error) {
+	validator := NewValidator(km.signingMethodName, km.publicKey)
+
 	var token *jwt.Token
-	token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if strings.ToUpper(token.Method.Alg()) != km.signingMethodName {
-			return nil, fmt.Errorf(ErrFUnsupportedSigningMethod, token.Method.Alg())
-		}
-
-		tmp := token.Header[TokenHeader_Alg]
-		algString := tmp.(string)
-		if strings.ToUpper(algString) != km.signingMethodName {
-			return nil, fmt.Errorf(ErrFUnsupportedSigningMethod, token.Header[TokenHeader_Alg])
-		}
-
-		var ok bool
-		switch km.signingMethodName {
-		case TokenAlg_PS512:
-			_, ok = token.Method.(*jwt.SigningMethodRSAPSS)
-		case TokenAlg_RS512:
-			_, ok = token.Method.(*jwt.SigningMethodRSA)
-		}
-		if !ok {
-			return nil, fmt.Errorf(ErrFUnexpectedSigningMethod, token.Header[TokenHeader_Alg])
-		}
-
-		return km.publicKey, nil
-	})
+	token, err = jwt.Parse(tokenString, validator.KeyFn)
 	if err != nil {
-		return 0, 0, err
+		return validator.userId, validator.sessionId, err
 	}
 
 	if !token.Valid {
-		return 0, 0, errors.New(ErrTokenIsNotValid)
+		return validator.userId, validator.sessionId, errors.New(ErrTokenIsNotValid)
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return 0, 0, errors.New(ErrTokenIsBroken)
-	}
-
-	var userIdIfc any
-	userIdIfc, ok = claims[WebTokenField_UserId]
-	if !ok {
-		return 0, 0, errors.New(ErrTokenIsBroken)
-	}
-
-	var userIdFloat64 float64
-	userIdFloat64, ok = userIdIfc.(float64)
-	if !ok {
-		return 0, 0, errors.New(ErrTokenIsBroken)
-	}
-
-	var sessionIdIfc any
-	sessionIdIfc, ok = claims[WebTokenField_SessionId]
-	if !ok {
-		return 0, 0, errors.New(ErrTokenIsBroken)
-	}
-
-	var sessionIdFloat64 float64
-	sessionIdFloat64, ok = sessionIdIfc.(float64)
-	if !ok {
-		return 0, 0, errors.New(ErrTokenIsBroken)
-	}
-
-	return int(userIdFloat64), int(sessionIdFloat64), nil
+	return validator.userId, validator.sessionId, nil
 }

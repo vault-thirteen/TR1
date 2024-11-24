@@ -191,3 +191,70 @@ func (dbc *DbController) CreateLogEvent(le *cm.LogEvent) (err error) {
 	}
 	return nil
 }
+
+// User authorisation.
+
+func (dbc *DbController) GetUserWithSessionByIdAbleToLogIn(user *cm.User) (err error) {
+	tx := dbc.db.Preload("Session").First(user, "id = ? AND can_log_in = ?", user.Id, true)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) CreateLogOutRequest(lor cm.LogOutRequest) (err error) {
+	tx := dbc.db.Create(&lor)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) GetFirstOutdatedLogOutRequest(edgeTime time.Time) (lors []cm.LogOutRequest, err error) {
+	tx := dbc.db.Limit(1).Where("created_at <= ?", edgeTime).Find(&lors)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return lors, nil
+}
+func (dbc *DbController) DeleteOldLogOutRequest(lor *cm.LogOutRequest) (err error) {
+	tx := dbc.db.Delete(&lor)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) FindLogOutRequest(lor *cm.LogOutRequest) (err error) {
+	tx := dbc.db.First(lor, "request_id = ?", lor.RequestId)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) DeleteSession(session *cm.Session) (err error) {
+	tx := dbc.db.Delete(session)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) DeleteLogOutRequest(lor *cm.LogOutRequest) (err error) {
+	tx := dbc.db.Where("id = ?", lor.Id).Delete(&lor)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+func (dbc *DbController) GetFirstOutdatedSession(edgeTime time.Time) (ss []cm.Session, err error) {
+	tx := dbc.db.Limit(1).Where("created_at <= ?", edgeTime).Find(&ss)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return ss, nil
+}
+func (dbc *DbController) DeleteOldSession(s *cm.Session) (err error) {
+	tx := dbc.db.Delete(&s)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}

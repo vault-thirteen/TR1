@@ -15,6 +15,7 @@ const (
 )
 
 const (
+	Administrator                = "administrator"
 	AllowNativePasswords         = "allowNativePasswords"
 	BodyTemplateForLogIn         = "bodyTemplateForLogIn"
 	BodyTemplateForRegVCode      = "bodyTemplateForRegVCode"
@@ -41,7 +42,9 @@ const (
 	IsStorageCleaningEnabled     = "isStorageCleaningEnabled"
 	KeyFile                      = "keyFile"
 	LogInRequestTtl              = "logInRequestTtl"
+	LogOutRequestTtl             = "logOutRequestTtl"
 	MaxAllowedPacket             = "maxAllowedPacket"
+	Moderator                    = "moderator"
 	Name                         = "name"
 	Net                          = "net"
 	Params                       = "params"
@@ -55,6 +58,7 @@ const (
 	RegistrationRequestTtl       = "registrationRequestTtl"
 	RequestIdLength              = "requestIdLength"
 	Schema                       = "schema"
+	SessionMaxDuration           = "sessionMaxDuration"
 	SigningMethod                = "signingMethod"
 	SiteName                     = "siteName"
 	SubjectTemplateForRegVCode   = "subjectTemplateForRegVCode"

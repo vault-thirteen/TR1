@@ -57,6 +57,11 @@
             "value": 180
           },
           {
+            "name": "logOutRequestTtl",
+            "type": "integer",
+            "value": 60
+          },
+          {
             "name": "isAdminApprovalRequired",
             "type": "boolean",
             "value": false

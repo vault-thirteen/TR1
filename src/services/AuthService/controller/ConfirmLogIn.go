@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/vault-thirteen/BytePackedPassword"
 	"github.com/vault-thirteen/JSON-RPC-M1"
@@ -11,6 +12,7 @@ import (
 	"github.com/vault-thirteen/TR1/src/models/dbc"
 	"github.com/vault-thirteen/TR1/src/models/rpc"
 	"github.com/vault-thirteen/TR1/src/models/rpc/error"
+	"github.com/vault-thirteen/TR1/src/shared/CommonConfigurationParameter"
 )
 
 func (c *Controller) ConfirmLogIn(params *json.RawMessage, _ *jrm1.ResponseMetaData) (result any, re *jrm1.RpcError) {
@@ -129,8 +131,11 @@ func (c *Controller) confirmLogIn(p *rm.ConfirmLogInParams) (result *rm.ConfirmL
 			return nil, c.databaseError(err)
 		}
 
+		sessionMaxDurationSec := c.far.systemSettings.GetParameterAsInt(ccp.SessionMaxDuration)
+		expirationTime := time.Now().Add(time.Duration(sessionMaxDurationSec) * time.Second)
+
 		var token string
-		token, err = c.far.jwtkm.MakeJWToken(user.Id, session.Id)
+		token, err = c.far.jwtkm.MakeJWToken(user.Id, session.Id, expirationTime)
 		if err != nil {
 			c.logError(err)
 			return nil, jrm1.NewRpcErrorByUser(rme.Code_JWT, fmt.Sprintf(rme.MsgF_JWT, err.Error()), nil)

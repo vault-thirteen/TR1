@@ -16,6 +16,7 @@ import (
 type ControllerFastAccessRegistry struct {
 	systemSettings  *ccse.CommonConfigurationServiceEntry
 	messageSettings *ccse.CommonConfigurationServiceEntry
+	roleSettings    *ccse.CommonConfigurationServiceEntry
 
 	rcsServiceClient    *rmc.Client
 	mailerServiceClient *rmc.Client

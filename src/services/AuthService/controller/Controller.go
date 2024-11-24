@@ -1,16 +1,19 @@
 package c
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"log"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/vault-thirteen/JSON-RPC-M1"
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/libraries/net"
 	"github.com/vault-thirteen/TR1/src/libraries/scheduler"
 	"github.com/vault-thirteen/TR1/src/models/common"
+	"github.com/vault-thirteen/TR1/src/models/dbc"
 	"github.com/vault-thirteen/TR1/src/models/rpc"
 	"github.com/vault-thirteen/TR1/src/models/rpc/error"
 	"github.com/vault-thirteen/TR1/src/services/common/components/CaptchaComponent"
@@ -58,6 +61,8 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		c.ConfirmRegistration,
 		c.StartLogIn,
 		c.ConfirmLogIn,
+		c.StartLogOut,
+		c.ConfirmLogOut,
 	}
 }
 
@@ -65,6 +70,8 @@ func (c *Controller) GetScheduledFunctions() []sch.ScheduledFn {
 	return []sch.ScheduledFn{
 		c.RemoveOutdatedRegistrationRequests,
 		c.RemoveOutdatedLogInRequests,
+		c.RemoveOutdatedLogOutRequests,
+		c.RemoveOutdatedSessions,
 	}
 }
 
@@ -90,6 +97,7 @@ func (c *Controller) initFAR() {
 
 	c.far.systemSettings = c.cfg.GetComponent(cm.Component_System, cm.Protocol_None)
 	c.far.messageSettings = c.cfg.GetComponent(cm.Component_Message, cm.Protocol_None)
+	c.far.roleSettings = c.cfg.GetComponent(cm.Component_Role, cm.Protocol_None)
 
 	c.far.rcc = rcc.FromAny(c.service.GetComponentByIndex(ComponentIndex_RpcClientComponent))
 
@@ -116,6 +124,7 @@ func (c *Controller) prepareDb() (err error) {
 		classesToInit := []any{
 			&cm.LogEvent{},
 			&cm.LogInRequest{},
+			&cm.LogOutRequest{},
 			&cm.Password{},
 			&cm.RegistrationRequest{},
 			&cm.Session{},
@@ -187,6 +196,116 @@ func (c *Controller) mustBeAuthUserIPA(auth *rm.Auth) (re *jrm1.RpcError) {
 	if err != nil {
 		c.logError(err)
 		return jrm1.NewRpcErrorByUser(rme.Code_Authorisation, rme.Msg_Authorisation, nil)
+	}
+
+	return nil
+}
+func (c *Controller) mustBeAnAuthToken(auth *rm.Auth) (userWithSession *cm.User, re *jrm1.RpcError) {
+	re = c.mustBeAuthUserIPA(auth)
+	if re != nil {
+		return nil, re
+	}
+
+	if len(auth.Token) == 0 {
+		return nil, jrm1.NewRpcErrorByUser(rme.Code_NotAuthorised, rme.Msg_NotAuthorised, nil)
+	}
+
+	userWithSession, re = c.getUserWithSessionByAuthToken(auth.Token)
+	if re != nil {
+		return nil, re
+	}
+
+	if bytes.Compare(auth.UserIPAB, userWithSession.Session.UserIPAB) != 0 {
+		return nil, jrm1.NewRpcErrorByUser(rme.Code_Authorisation, rme.Msg_Authorisation, nil)
+	}
+
+	return userWithSession, nil
+}
+func (c *Controller) getUserWithSessionByAuthToken(authToken string) (userWithSession *cm.User, re *jrm1.RpcError) {
+	dbC := dbc.NewDbController(c.GetDb())
+
+	//TODO: This step may be cached for better performance.
+	var userId, sessionId int
+	var err error
+	userId, sessionId, err = c.far.jwtkm.ValidateToken(authToken)
+	if err != nil {
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			re = c.logOutUserByTimeout(userId, sessionId)
+			if re != nil {
+				return nil, re
+			}
+
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_TokenIsExpired, rme.Msg_TokenIsExpired, nil)
+		}
+
+		c.logError(err)
+		return nil, jrm1.NewRpcErrorByUser(rme.Code_Authorisation, rme.Msg_Authorisation, nil)
+	}
+
+	userWithSession = &cm.User{Id: userId}
+	err = dbC.GetUserWithSessionByIdAbleToLogIn(userWithSession)
+	if err != nil {
+		return nil, c.databaseError(err)
+	}
+
+	if (userWithSession.Session == nil) || (userWithSession.Session.Id != sessionId) {
+		return nil, jrm1.NewRpcErrorByUser(rme.Code_SessionIsNotFound, rme.Msg_SessionIsNotFound, nil)
+	}
+
+	// Attach special user roles from settings.
+	userWithSession.Roles.IsModerator = c.isUserModerator(userWithSession.Id)
+	userWithSession.Roles.IsAdministrator = c.isUserAdministrator(userWithSession.Id)
+
+	return userWithSession, nil
+}
+func (c *Controller) isUserAdministrator(userId int) (isAdministrator bool) {
+	for _, id := range c.far.roleSettings.GetParameterAsInts(ccp.Administrator) {
+		if id == userId {
+			return true
+		}
+	}
+	return false
+}
+func (c *Controller) isUserModerator(userId int) (isModerator bool) {
+	for _, id := range c.far.roleSettings.GetParameterAsInts(ccp.Moderator) {
+		if id == userId {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Controller) logOutUserBySelf(userId int, sessionId int) (re *jrm1.RpcError) {
+	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutBySelf)
+}
+func (c *Controller) logOutUserByTimeout(userId int, sessionId int) (re *jrm1.RpcError) {
+	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByTimeout)
+}
+func (c *Controller) logOutUser(userId int, sessionId int, logEventType int) (re *jrm1.RpcError) {
+	dbC := dbc.NewDbController(c.GetDb())
+	user := &cm.User{Id: userId}
+
+	err := dbC.GetUserWithSessionByIdAbleToLogIn(user)
+	if err != nil {
+		return c.databaseError(err)
+	}
+
+	if (user.Session == nil) || (user.Session.Id != sessionId) {
+		return jrm1.NewRpcErrorByUser(rme.Code_SessionIsNotFound, rme.Msg_SessionIsNotFound, nil)
+	}
+
+	// Delete session.
+	err = dbC.DeleteSession(user.Session)
+	if err != nil {
+		return c.databaseError(err)
+	}
+
+	// Journaling.
+	logEvent := cm.NewLogEvent(logEventType, user.Id, nil, nil)
+
+	err = dbC.CreateLogEvent(logEvent)
+	if err != nil {
+		return c.databaseError(err)
 	}
 
 	return nil
@@ -297,4 +416,14 @@ func (c *Controller) checkCaptcha(captchaId string, answer string) (isCorrect bo
 	}
 
 	return result.IsSuccess, nil
+}
+
+func (c *Controller) createRequestIdForLogOut() (rid *string, re *jrm1.RpcError) {
+	var err error
+	rid, err = c.far.ridg.CreatePassword()
+	if err != nil {
+		return nil, jrm1.NewRpcErrorByUser(rme.Code_RequestIdGenerator, rme.Msg_RequestIdGenerator, nil)
+	}
+
+	return rid, nil
 }

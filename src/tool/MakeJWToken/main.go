@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/vault-thirteen/TR1/src/libraries/km"
 )
@@ -23,8 +24,11 @@ func main() {
 	keyMaker, err = km.New(signingMethod, privateKeyFilePath, publicKeyFilePath)
 	mustBeNoError(err)
 
+	sessionMaxDurationSec := 5 * 60
+	expirationTime := time.Now().Add(time.Duration(sessionMaxDurationSec) * time.Second)
+
 	var ts string
-	ts, err = keyMaker.MakeJWToken(userId, sessionId)
+	ts, err = keyMaker.MakeJWToken(userId, sessionId, expirationTime)
 	mustBeNoError(err)
 
 	fmt.Println(fmt.Sprintf("Token string: %v.", ts))

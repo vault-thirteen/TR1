@@ -45,6 +45,10 @@ const (
 	Code_PasswordIsWrong                        = 35
 	Code_JWT                                    = 36
 	Code_VerificationCodeIsWrong                = 37
+	Code_SessionIsNotFound                      = 38
+	Code_NotAuthorised                          = 39
+	Code_NotSure                                = 40
+	Code_TokenIsExpired                         = 41
 )
 
 // RPC error messages.
@@ -86,6 +90,10 @@ const (
 	Msg_PasswordIsWrong                        = "password is wrong"
 	MsgF_JWT                                   = "JWT error: %s"
 	Msg_VerificationCodeIsWrong                = "verification code is wrong"
+	Msg_SessionIsNotFound                      = "session is not found"
+	Msg_NotAuthorised                          = "not authorised"
+	Msg_NotSure                                = "not sure"
+	Msg_TokenIsExpired                         = "token is expired"
 )
 
 func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
@@ -126,6 +134,10 @@ func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
 		Code_PasswordIsWrong:                        http.StatusForbidden,
 		Code_JWT:                                    http.StatusInternalServerError,
 		Code_VerificationCodeIsWrong:                http.StatusForbidden,
+		Code_SessionIsNotFound:                      http.StatusForbidden,
+		Code_NotAuthorised:                          http.StatusUnauthorized,
+		Code_NotSure:                                http.StatusBadRequest,
+		Code_TokenIsExpired:                         http.StatusForbidden,
 	}
 }
 

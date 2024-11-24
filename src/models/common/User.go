@@ -13,6 +13,7 @@ type User struct {
 	Name              string `gorm:"uniqueIndex,size:255"`
 	Email             string `gorm:"uniqueIndex,size:255"`
 	Password          *Password
+	Session           *Session
 	Roles             Roles `gorm:"embedded"`
 	RegTime           time.Time
 	LastBadActionTime *time.Time
