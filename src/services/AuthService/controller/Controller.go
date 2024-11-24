@@ -224,7 +224,6 @@ func (c *Controller) mustBeAnAuthToken(auth *rm.Auth) (userWithSession *cm.User,
 func (c *Controller) getUserWithSessionByAuthToken(authToken string) (userWithSession *cm.User, re *jrm1.RpcError) {
 	dbC := dbc.NewDbController(c.GetDb())
 
-	//TODO: This step may be cached for better performance.
 	var userId, sessionId int
 	var err error
 	userId, sessionId, err = c.far.jwtkm.ValidateToken(authToken)

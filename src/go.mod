@@ -7,6 +7,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/valord577/mailx v0.6.20240511
 	github.com/vault-thirteen/BytePackedPassword v0.3.15
+	github.com/vault-thirteen/Cache v0.17.0
 	github.com/vault-thirteen/JSON-RPC-M1 v0.3.13
 	github.com/vault-thirteen/RingCaptcha v0.11.0
 	github.com/vault-thirteen/auxie v0.28.1
@@ -23,7 +24,6 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
-	github.com/vault-thirteen/Cache v0.17.0 // indirect
 	github.com/vault-thirteen/Simple-File-Server v0.16.0 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
 	golang.org/x/image v0.22.0 // indirect

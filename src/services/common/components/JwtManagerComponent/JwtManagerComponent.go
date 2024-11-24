@@ -17,12 +17,17 @@ type JwtManagerComponent struct {
 func (c *JwtManagerComponent) Init(cfg interfaces.IConfiguration, controller interfaces.IController) (sc interfaces.IServiceComponent, err error) {
 	jwtSettings := cfg.GetComponent(cm.Component_Jwt, cm.Protocol_None)
 
+	kms := &km.KeyMakerSettings{
+		SigningMethodName:  jwtSettings.GetParameterAsString(ccp.SigningMethod),
+		PrivateKeyFilePath: jwtSettings.GetParameterAsString(ccp.PrivateKeyFilePath),
+		PublicKeyFilePath:  jwtSettings.GetParameterAsString(ccp.PublicKeyFilePath),
+		IsCacheEnabled:     jwtSettings.GetParameterAsBool(ccp.IsCacheEnabled),
+		CacheSizeLimit:     jwtSettings.GetParameterAsInt(ccp.CacheSizeLimit),
+		CacheRecordTtl:     uint(jwtSettings.GetParameterAsInt(ccp.CacheRecordTtl)),
+	}
+
 	var jwtkm *km.KeyMaker
-	jwtkm, err = km.New(
-		jwtSettings.GetParameterAsString(ccp.SigningMethod),
-		jwtSettings.GetParameterAsString(ccp.PrivateKeyFilePath),
-		jwtSettings.GetParameterAsString(ccp.PublicKeyFilePath),
-	)
+	jwtkm, err = km.New(kms)
 	if err != nil {
 		return nil, err
 	}

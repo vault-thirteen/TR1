@@ -165,6 +165,11 @@
         "type": "jwt",
         "parameters": [
           {
+            "name": "signingMethod",
+            "type": "string",
+            "value": "RS512"
+          },
+          {
             "name": "privateKeyFilePath",
             "type": "string",
             "value": "cert\\JWT\\jwtPrivateKey.pem"
@@ -175,9 +180,19 @@
             "value": "cert\\JWT\\jwtPublicKey.pem"
           },
           {
-            "name": "signingMethod",
-            "type": "string",
-            "value": "RS512"
+            "name": "isCacheEnabled",
+            "type": "boolean",
+            "value": true
+          },
+          {
+            "name": "cacheSizeLimit",
+            "type": "integer",
+            "value": 1024
+          },
+          {
+            "name": "cacheRecordTtl",
+            "type": "integer",
+            "value": 60
           }
         ]
       },

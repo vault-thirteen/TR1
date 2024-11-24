@@ -16,6 +16,7 @@ type Validator struct {
 	claims    jwt.MapClaims
 	userId    int
 	sessionId int
+	expTime   int64
 }
 
 func NewValidator(signingMethodName string, publicKey *rsa.PublicKey) *Validator {
@@ -62,6 +63,11 @@ func (v *Validator) KeyFn(token *jwt.Token) (key interface{}, err error) {
 		return nil, err
 	}
 
+	err = v.getExpTime()
+	if err != nil {
+		return nil, err
+	}
+
 	return v.publicKey, nil
 }
 
@@ -78,6 +84,17 @@ func (v *Validator) getSessionId() (err error) {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+func (v *Validator) getExpTime() (err error) {
+	var x int
+	x, err = v.getClaimAsInt(WebTokenField_ExpirationTime)
+	if err != nil {
+		return err
+	}
+
+	v.expTime = int64(x)
 
 	return nil
 }

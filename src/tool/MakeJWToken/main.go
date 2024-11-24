@@ -20,8 +20,17 @@ func main() {
 	userId, sessionId, privateKeyFilePath, publicKeyFilePath, signingMethod, err := receiveArguments()
 	mustBeNoError(err)
 
+	kms := &km.KeyMakerSettings{
+		SigningMethodName:  signingMethod,
+		PrivateKeyFilePath: privateKeyFilePath,
+		PublicKeyFilePath:  publicKeyFilePath,
+		IsCacheEnabled:     true,
+		CacheSizeLimit:     1024,
+		CacheRecordTtl:     60,
+	}
+
 	var keyMaker *km.KeyMaker
-	keyMaker, err = km.New(signingMethod, privateKeyFilePath, publicKeyFilePath)
+	keyMaker, err = km.New(kms)
 	mustBeNoError(err)
 
 	sessionMaxDurationSec := 5 * 60
