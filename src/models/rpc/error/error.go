@@ -49,6 +49,8 @@ const (
 	Code_NotAuthorised                          = 39
 	Code_NotSure                                = 40
 	Code_TokenIsExpired                         = 41
+	Code_EmailChangeRequestWithNewEmailExists   = 42
+	Code_PasswordChangeRequestWithUserIdExists  = 43
 )
 
 // RPC error messages.
@@ -94,6 +96,8 @@ const (
 	Msg_NotAuthorised                          = "not authorised"
 	Msg_NotSure                                = "not sure"
 	Msg_TokenIsExpired                         = "token is expired"
+	Msg_EmailChangeRequestWithNewEmailExists   = "e-mail change request with new e-mail exists"
+	Msg_PasswordChangeRequestWithUserIdExists  = "password change request with user ID exists"
 )
 
 func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
@@ -138,6 +142,8 @@ func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
 		Code_NotAuthorised:                          http.StatusUnauthorized,
 		Code_NotSure:                                http.StatusBadRequest,
 		Code_TokenIsExpired:                         http.StatusForbidden,
+		Code_EmailChangeRequestWithNewEmailExists:   http.StatusConflict,
+		Code_PasswordChangeRequestWithUserIdExists:  http.StatusConflict,
 	}
 }
 

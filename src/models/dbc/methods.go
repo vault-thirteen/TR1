@@ -1,6 +1,7 @@
 package dbc
 
 import (
+	"gorm.io/gorm"
 	"time"
 
 	"github.com/vault-thirteen/BytePackedPassword"
@@ -243,7 +244,6 @@ func (dbc *DbController) DeleteLogOutRequest(lor *cm.LogOutRequest) (err error) 
 	}
 	return nil
 }
-
 func (dbc *DbController) GetFirstOutdatedSession(edgeTime time.Time) (ss []cm.Session, err error) {
 	tx := dbc.db.Limit(1).Where("created_at <= ?", edgeTime).Find(&ss)
 	if tx.Error != nil {
@@ -253,6 +253,126 @@ func (dbc *DbController) GetFirstOutdatedSession(edgeTime time.Time) (ss []cm.Se
 }
 func (dbc *DbController) DeleteOldSession(s *cm.Session) (err error) {
 	tx := dbc.db.Delete(&s)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+// E-mail change.
+
+func (dbc *DbController) CreateEmailChangeRequest(ecr cm.EmailChangeRequest) (err error) {
+	tx := dbc.db.Create(&ecr)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) ExistsEmailChangeRequestWithNewEmail(newEmail string) (exists bool, err error) {
+	var n int64
+	tx := dbc.db.Model(&cm.EmailChangeRequest{}).Where("new_email = ?", newEmail).Count(&n)
+	if tx.Error != nil {
+		return false, tx.Error
+	}
+	if n > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+func (dbc *DbController) FindEmailChangeRequest(ecr *cm.EmailChangeRequest) (err error) {
+	tx := dbc.db.First(ecr, "request_id = ?", ecr.RequestId)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) SaveUserEmail(user *cm.User, email string) (err error) {
+	user.Email = email
+
+	tx := dbc.db.Save(user)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) DeleteEmailChangeRequest(ecr *cm.EmailChangeRequest) (err error) {
+	tx := dbc.db.Where("id = ?", ecr.Id).Delete(&ecr)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) GetFirstOutdatedEmailChangeRequest(edgeTime time.Time) (ecrs []cm.EmailChangeRequest, err error) {
+	tx := dbc.db.Limit(1).Where("created_at <= ?", edgeTime).Find(&ecrs)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return ecrs, nil
+}
+func (dbc *DbController) DeleteOldEmailChangeRequest(ecr *cm.EmailChangeRequest) (err error) {
+	tx := dbc.db.Delete(&ecr)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+// Password change.
+
+func (dbc *DbController) ExistsPasswordChangeRequestWithUserId(user *cm.User) (exists bool, err error) {
+	var n int64
+	tx := dbc.db.Model(&cm.PasswordChangeRequest{}).Where("user_id = ?", user.Id).Count(&n)
+	if tx.Error != nil {
+		return false, tx.Error
+	}
+	if n > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+func (dbc *DbController) CreatePasswordChangeRequest(pcr cm.PasswordChangeRequest) (err error) {
+	tx := dbc.db.Create(&pcr)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) GetFirstOutdatedPasswordChangeRequest(edgeTime time.Time) (pcrs []cm.PasswordChangeRequest, err error) {
+	tx := dbc.db.Limit(1).Where("created_at <= ?", edgeTime).Find(&pcrs)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return pcrs, nil
+}
+func (dbc *DbController) DeleteOldPasswordChangeRequest(pcr *cm.PasswordChangeRequest) (err error) {
+	tx := dbc.db.Delete(&pcr)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) FindPasswordChangeRequest(pcr *cm.PasswordChangeRequest) (err error) {
+	tx := dbc.db.First(pcr, "request_id = ?", pcr.RequestId)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) SaveUserPassword(user *cm.User, password string) (err error) {
+	user.Password.Bytes, err = bpp.PackSymbols([]rune(password))
+	if err != nil {
+		return err
+	}
+
+	//tx := dbc.db.Save(user) <- This does not work in modern versions of GORM !
+	tx := dbc.db.Session(&gorm.Session{FullSaveAssociations: true}).Save(user)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) DeletePasswordChangeRequest(pcr *cm.PasswordChangeRequest) (err error) {
+	tx := dbc.db.Where("id = ?", pcr.Id).Delete(&pcr)
 	if tx.Error != nil {
 		return tx.Error
 	}

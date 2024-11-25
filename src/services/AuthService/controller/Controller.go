@@ -63,6 +63,10 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		c.ConfirmLogIn,
 		c.StartLogOut,
 		c.ConfirmLogOut,
+		c.StartEmailChange,
+		c.ConfirmEmailChange,
+		c.StartPasswordChange,
+		c.ConfirmPasswordChange,
 	}
 }
 
@@ -71,6 +75,8 @@ func (c *Controller) GetScheduledFunctions() []sch.ScheduledFn {
 		c.RemoveOutdatedRegistrationRequests,
 		c.RemoveOutdatedLogInRequests,
 		c.RemoveOutdatedLogOutRequests,
+		c.RemoveOutdatedEmailChangeRequests,
+		c.RemoveOutdatedPasswordChangeRequests,
 		c.RemoveOutdatedSessions,
 	}
 }
@@ -122,10 +128,12 @@ func (c *Controller) prepareDb() (err error) {
 
 	if c.far.systemSettings.GetParameterAsBool(ccp.IsDatabaseInitialisationUsed) {
 		classesToInit := []any{
+			&cm.EmailChangeRequest{},
 			&cm.LogEvent{},
 			&cm.LogInRequest{},
 			&cm.LogOutRequest{},
 			&cm.Password{},
+			&cm.PasswordChangeRequest{},
 			&cm.RegistrationRequest{},
 			&cm.Session{},
 			&cm.User{},
@@ -280,6 +288,9 @@ func (c *Controller) logOutUserBySelf(userId int, sessionId int) (re *jrm1.RpcEr
 func (c *Controller) logOutUserByTimeout(userId int, sessionId int) (re *jrm1.RpcError) {
 	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByTimeout)
 }
+func (c *Controller) logOutUserByAction(userId int, sessionId int) (re *jrm1.RpcError) {
+	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByAction)
+}
 func (c *Controller) logOutUser(userId int, sessionId int, logEventType int) (re *jrm1.RpcError) {
 	dbC := dbc.NewDbController(c.GetDb())
 	user := &cm.User{Id: userId}
@@ -416,8 +427,25 @@ func (c *Controller) checkCaptcha(captchaId string, answer string) (isCorrect bo
 
 	return result.IsSuccess, nil
 }
-
 func (c *Controller) createRequestIdForLogOut() (rid *string, re *jrm1.RpcError) {
+	var err error
+	rid, err = c.far.ridg.CreatePassword()
+	if err != nil {
+		return nil, jrm1.NewRpcErrorByUser(rme.Code_RequestIdGenerator, rme.Msg_RequestIdGenerator, nil)
+	}
+
+	return rid, nil
+}
+func (c *Controller) createRequestIdForEmailChange() (rid *string, re *jrm1.RpcError) {
+	var err error
+	rid, err = c.far.ridg.CreatePassword()
+	if err != nil {
+		return nil, jrm1.NewRpcErrorByUser(rme.Code_RequestIdGenerator, rme.Msg_RequestIdGenerator, nil)
+	}
+
+	return rid, nil
+}
+func (c *Controller) createRequestIdForPasswordChange() (rid *string, re *jrm1.RpcError) {
 	var err error
 	rid, err = c.far.ridg.CreatePassword()
 	if err != nil {

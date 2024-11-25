@@ -143,6 +143,94 @@ func (c *Controller) getNextOutdatedLogOutRequest(edgeTime time.Time) (lor *cm.L
 	return &lors[0], nil
 }
 
+func (c *Controller) RemoveOutdatedEmailChangeRequests() (err error) {
+	ecrTtl := c.far.systemSettings.GetParameterAsInt(ccp.EmailChangeRequestTtl)
+	edgeTime := time.Now().Add(-time.Duration(ecrTtl) * time.Second)
+	dbC := dbc.NewDbController(c.GetDb())
+	var isDebugMode = c.far.systemSettings.GetParameterAsBool(ccp.IsDebugMode)
+
+	var ecr *cm.EmailChangeRequest
+	for {
+		ecr, err = c.getNextOutdatedEmailChangeRequest(edgeTime)
+		if err != nil {
+			return err
+		}
+
+		if ecr == nil {
+			break
+		}
+
+		if isDebugMode {
+			fmt.Println("removing outdated e-mail change request. RequestId:", ecr.RequestId)
+		}
+		err = dbC.DeleteOldEmailChangeRequest(ecr)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+func (c *Controller) getNextOutdatedEmailChangeRequest(edgeTime time.Time) (ecr *cm.EmailChangeRequest, err error) {
+	dbC := dbc.NewDbController(c.GetDb())
+
+	var ecrs []cm.EmailChangeRequest
+	ecrs, err = dbC.GetFirstOutdatedEmailChangeRequest(edgeTime)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(ecrs) != 1 {
+		return nil, nil
+	}
+
+	return &ecrs[0], nil
+}
+
+func (c *Controller) RemoveOutdatedPasswordChangeRequests() (err error) {
+	pcrTtl := c.far.systemSettings.GetParameterAsInt(ccp.PasswordChangeRequestTtl)
+	edgeTime := time.Now().Add(-time.Duration(pcrTtl) * time.Second)
+	dbC := dbc.NewDbController(c.GetDb())
+	var isDebugMode = c.far.systemSettings.GetParameterAsBool(ccp.IsDebugMode)
+
+	var pcr *cm.PasswordChangeRequest
+	for {
+		pcr, err = c.getNextOutdatedPasswordChangeRequest(edgeTime)
+		if err != nil {
+			return err
+		}
+
+		if pcr == nil {
+			break
+		}
+
+		if isDebugMode {
+			fmt.Println("removing outdated password change request. RequestId:", pcr.RequestId)
+		}
+		err = dbC.DeleteOldPasswordChangeRequest(pcr)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+func (c *Controller) getNextOutdatedPasswordChangeRequest(edgeTime time.Time) (pcr *cm.PasswordChangeRequest, err error) {
+	dbC := dbc.NewDbController(c.GetDb())
+
+	var pcrs []cm.PasswordChangeRequest
+	pcrs, err = dbC.GetFirstOutdatedPasswordChangeRequest(edgeTime)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(pcrs) != 1 {
+		return nil, nil
+	}
+
+	return &pcrs[0], nil
+}
+
 func (c *Controller) RemoveOutdatedSessions() (err error) {
 	sessionTtl := c.far.systemSettings.GetParameterAsInt(ccp.SessionMaxDuration)
 	edgeTime := time.Now().Add(-time.Duration(sessionTtl) * time.Second)

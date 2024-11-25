@@ -62,6 +62,16 @@
             "value": 60
           },
           {
+            "name": "emailChangeRequestTtl",
+            "type": "integer",
+            "value": 180
+          },
+          {
+            "name": "passwordChangeRequestTtl",
+            "type": "integer",
+            "value": 60
+          },
+          {
             "name": "isAdminApprovalRequired",
             "type": "boolean",
             "value": false
