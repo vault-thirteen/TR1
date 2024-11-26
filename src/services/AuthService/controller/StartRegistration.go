@@ -115,7 +115,7 @@ func (c *Controller) startRegistration(p *rm.StartRegistrationParams) (result *r
 	// Start user registration.
 	{
 		var requestId *string
-		requestId, re = c.createRequestIdForLogIn()
+		requestId, re = c.createRequestId()
 		if re != nil {
 			return nil, re
 		}

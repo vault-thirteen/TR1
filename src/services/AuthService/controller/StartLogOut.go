@@ -42,7 +42,7 @@ func (c *Controller) startLogOut(p *rm.StartLogOutParams) (result *rm.StartLogOu
 	// Start logging out.
 	{
 		var requestId *string
-		requestId, re = c.createRequestIdForLogOut()
+		requestId, re = c.createRequestId()
 		if re != nil {
 			return nil, re
 		}

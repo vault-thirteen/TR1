@@ -69,7 +69,7 @@ func (c *Controller) startLogIn(p *rm.StartLogInParams) (result *rm.StartLogInRe
 	// Start logging in.
 	{
 		var requestId *string
-		requestId, re = c.createRequestIdForLogIn()
+		requestId, re = c.createRequestId()
 		if re != nil {
 			return nil, re
 		}

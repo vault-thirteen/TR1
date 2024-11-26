@@ -51,6 +51,7 @@ const (
 	Moderator                    = "moderator"
 	Name                         = "name"
 	Net                          = "net"
+	PageSize                     = "pageSize"
 	Params                       = "params"
 	Password                     = "password"
 	PasswordChangeRequestTtl     = "passwordChangeRequestTtl"

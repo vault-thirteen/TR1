@@ -83,7 +83,7 @@ func (c *Controller) startPasswordChange(p *rm.StartPasswordChangeParams) (resul
 	// Start changing user password.
 	{
 		var requestId *string
-		requestId, re = c.createRequestIdForPasswordChange()
+		requestId, re = c.createRequestId()
 		if re != nil {
 			return nil, re
 		}

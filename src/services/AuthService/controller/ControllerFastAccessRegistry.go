@@ -21,6 +21,8 @@ type ControllerFastAccessRegistry struct {
 	rcsServiceClient    *rmc.Client
 	mailerServiceClient *rmc.Client
 
+	pageSize int
+
 	dbc   *dc.DatabaseComponent
 	db    *gorm.DB
 	ridgc *rigc.RequestIdGeneratorComponent

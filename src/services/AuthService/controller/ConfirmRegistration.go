@@ -3,7 +3,6 @@ package c
 import (
 	"bytes"
 	"encoding/json"
-	"time"
 
 	"github.com/vault-thirteen/JSON-RPC-M1"
 	"github.com/vault-thirteen/TR1/src/models/common"
@@ -102,24 +101,9 @@ func (c *Controller) confirmRegistration(p *rm.ConfirmRegistrationParams) (resul
 		}
 
 		// Register user.
-		var user = &cm.User{
-			Name:  rr.UserName,
-			Email: rr.UserEmail,
-			Roles: cm.Roles{
-				CanLogIn: true,
-				CanRead:  true,
-			},
-			RegTime: time.Now(),
-		}
-
-		err = dbC.CreateUser(user, rr.UserPassword)
-		if err != nil {
-			return nil, c.databaseError(err)
-		}
-
-		err = dbC.DeleteRegistrationRequestRFA(rr)
-		if err != nil {
-			return nil, c.databaseError(err)
+		re = c.registerUser(rr)
+		if re != nil {
+			return nil, re
 		}
 
 		result = &rm.ConfirmRegistrationResult{

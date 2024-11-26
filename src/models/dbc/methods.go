@@ -8,6 +8,41 @@ import (
 	"github.com/vault-thirteen/TR1/src/models/common"
 )
 
+const (
+	CountOnError = -1
+)
+
+// Common methods.
+
+func (dbc *DbController) countAllItems(model *gorm.DB) (n int, err error) {
+	var n64 int64
+	tx := model.Count(&n64)
+	if tx.Error != nil {
+		return CountOnError, tx.Error
+	}
+	return int(n64), nil
+}
+func (dbc *DbController) listItemsOnPage(model *gorm.DB, page int, dst any) (err error) {
+	tx := model.Limit(dbc.pageSize).Offset((page - 1) * dbc.pageSize).Find(dst)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) listItemsOnPageWithTotalCount(model *gorm.DB, page int, dst any) (totalCount int, err error) {
+	totalCount, err = dbc.countAllItems(model)
+	if err != nil {
+		return CountOnError, err
+	}
+
+	err = dbc.listItemsOnPage(model, page, dst)
+	if err != nil {
+		return CountOnError, err
+	}
+
+	return totalCount, nil
+}
+
 // User registration.
 
 func (dbc *DbController) IsUserNameFree(userName string) (isFree bool, err error) {
@@ -114,6 +149,23 @@ func (dbc *DbController) GetFirstOutdatedRegistrationRequest(edgeTime time.Time)
 		return nil, tx.Error
 	}
 	return rrs, nil
+}
+func (dbc *DbController) ListRegistrationRequestsRFA(page int) (rrs []cm.RegistrationRequest, totalCount int, err error) {
+	model := dbc.db.Model(&cm.RegistrationRequest{}).Where("is_ready_for_approval = ?", true).Omit("UserPassword")
+
+	totalCount, err = dbc.listItemsOnPageWithTotalCount(model, page, &rrs)
+	if err != nil {
+		return nil, totalCount, err
+	}
+
+	return rrs, totalCount, nil
+}
+func (dbc *DbController) GetRegistrationRequestRFA(userEmail string, rr *cm.RegistrationRequest) (err error) {
+	tx := dbc.db.First(rr, "is_ready_for_approval = ? AND user_email = ?", true, userEmail)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }
 
 // User logging in.

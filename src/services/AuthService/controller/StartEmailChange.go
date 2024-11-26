@@ -83,7 +83,7 @@ func (c *Controller) startEmailChange(p *rm.StartEmailChangeParams) (result *rm.
 	// Start changing e-mail.
 	{
 		var requestId *string
-		requestId, re = c.createRequestIdForEmailChange()
+		requestId, re = c.createRequestId()
 		if re != nil {
 			return nil, re
 		}

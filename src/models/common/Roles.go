@@ -5,6 +5,6 @@ type Roles struct {
 	CanRead         bool
 	CanWriteMessage bool
 	CanCreateThread bool
-	IsModerator     bool
-	IsAdministrator bool
+	IsModerator     bool `gorm:"-"`
+	IsAdministrator bool `gorm:"-"`
 }
