@@ -9,9 +9,7 @@ import (
 
 func (c *Controller) Ping(_ *json.RawMessage, _ *jrm1.ResponseMetaData) (result any, re *jrm1.RpcError) {
 	result = rm.PingResult{
-		Success: rm.Success{
-			OK: true,
-		},
+		Success: rm.Success{OK: true},
 	}
 	return result, nil
 }

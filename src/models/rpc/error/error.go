@@ -52,6 +52,8 @@ const (
 	Code_EmailChangeRequestWithNewEmailExists   = 42
 	Code_PasswordChangeRequestWithUserIdExists  = 43
 	Code_PageIsNotSet                           = 44
+	Code_UserIsNotSet                           = 45
+	Code_IdIsNotSet                             = 46
 )
 
 // RPC error messages.
@@ -100,6 +102,8 @@ const (
 	Msg_EmailChangeRequestWithNewEmailExists   = "e-mail change request with new e-mail exists"
 	Msg_PasswordChangeRequestWithUserIdExists  = "password change request with user ID exists"
 	Msg_PageIsNotSet                           = "page is not set"
+	Msg_UserIsNotSet                           = "user is not set"
+	Msg_IdIsNotSet                             = "ID is not set"
 )
 
 func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
@@ -147,6 +151,8 @@ func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
 		Code_EmailChangeRequestWithNewEmailExists:   http.StatusConflict,
 		Code_PasswordChangeRequestWithUserIdExists:  http.StatusConflict,
 		Code_PageIsNotSet:                           http.StatusBadRequest,
+		Code_UserIsNotSet:                           http.StatusBadRequest,
+		Code_IdIsNotSet:                             http.StatusBadRequest,
 	}
 }
 

@@ -71,6 +71,10 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		c.ListRegistrationRequestsRFA,
 		c.ApproveRegistrationRequestRFA,
 		c.RejectRegistrationRequestRFA,
+		c.IsUserLoggedIn,
+		c.ListUsers,
+		c.ListSessions,
+		c.LogUserOutA,
 	}
 }
 
@@ -311,15 +315,18 @@ func (c *Controller) registerUser(rr *cm.RegistrationRequest) (re *jrm1.RpcError
 	return nil
 }
 func (c *Controller) logOutUserBySelf(userId int, sessionId int) (re *jrm1.RpcError) {
-	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutBySelf)
+	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutBySelf, nil)
 }
 func (c *Controller) logOutUserByTimeout(userId int, sessionId int) (re *jrm1.RpcError) {
-	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByTimeout)
+	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByTimeout, nil)
 }
 func (c *Controller) logOutUserByAction(userId int, sessionId int) (re *jrm1.RpcError) {
-	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByAction)
+	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByAction, nil)
 }
-func (c *Controller) logOutUser(userId int, sessionId int, logEventType int) (re *jrm1.RpcError) {
+func (c *Controller) logOutUserByAdministrator(userId int, sessionId int, adminId *int) (re *jrm1.RpcError) {
+	return c.logOutUser(userId, sessionId, cm.LogEvent_Type_LogOutByAdministrator, adminId)
+}
+func (c *Controller) logOutUser(userId int, sessionId int, logEventType int, adminId *int) (re *jrm1.RpcError) {
 	dbC := dbc.NewDbController(c.GetDb())
 	user := &cm.User{Id: userId}
 
@@ -339,7 +346,7 @@ func (c *Controller) logOutUser(userId int, sessionId int, logEventType int) (re
 	}
 
 	// Journaling.
-	logEvent := cm.NewLogEvent(logEventType, user.Id, nil, nil)
+	logEvent := cm.NewLogEvent(logEventType, user.Id, nil, adminId)
 
 	err = dbC.CreateLogEvent(logEvent)
 	if err != nil {

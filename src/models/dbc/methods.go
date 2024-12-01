@@ -430,3 +430,34 @@ func (dbc *DbController) DeletePasswordChangeRequest(pcr *cm.PasswordChangeReque
 	}
 	return nil
 }
+
+// Users & Sessions.
+
+func (dbc *DbController) FindUserSession(user *cm.User) (session *cm.Session, err error) {
+	session = new(cm.Session)
+	tx := dbc.db.First(session, "user_id = ?", user.Id)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return session, nil
+}
+func (dbc *DbController) ListAllUsers(page int) (users []cm.User, totalCount int, err error) {
+	model := dbc.db.Model(&cm.User{})
+
+	totalCount, err = dbc.listItemsOnPageWithTotalCount(model, page, &users)
+	if err != nil {
+		return nil, totalCount, err
+	}
+
+	return users, totalCount, nil
+}
+func (dbc *DbController) ListSessions(page int) (sessions []cm.Session, totalCount int, err error) {
+	model := dbc.db.Preload("User").Model(&cm.Session{})
+
+	totalCount, err = dbc.listItemsOnPageWithTotalCount(model, page, &sessions)
+	if err != nil {
+		return nil, totalCount, err
+	}
+
+	return sessions, totalCount, nil
+}

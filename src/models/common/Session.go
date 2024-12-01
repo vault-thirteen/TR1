@@ -6,7 +6,8 @@ import (
 
 type Session struct {
 	MetaData
-	Id       int `gorm:"primarykey"`
-	UserId   int `gorm:"uniqueIndex"`
-	UserIPAB net.IP
+	Id       int    `json:"id" gorm:"primarykey"`
+	UserId   int    `json:"userId" gorm:"uniqueIndex"`
+	User     *User  `json:"user"`
+	UserIPAB net.IP `json:"userIPAB"`
 }

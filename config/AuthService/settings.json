@@ -74,7 +74,7 @@
           {
             "name": "isAdminApprovalRequired",
             "type": "boolean",
-            "value": false
+            "value": true
           },
           {
             "name": "requestIdLength",
@@ -217,7 +217,7 @@
           {
             "name": "administrator",
             "type": "integers",
-            "value": []
+            "value": [1]
           }
         ]
       },

@@ -1,10 +1,10 @@
 package cm
 
 type Roles struct {
-	CanLogIn        bool
-	CanRead         bool
-	CanWriteMessage bool
-	CanCreateThread bool
-	IsModerator     bool `gorm:"-"`
-	IsAdministrator bool `gorm:"-"`
+	CanLogIn        bool `json:"canLogIn"`
+	CanRead         bool `json:"canRead"`
+	CanWriteMessage bool `json:"canWriteMessage"`
+	CanCreateThread bool `json:"canCreateThread"`
+	IsModerator     bool `json:"isModerator" gorm:"-"`
+	IsAdministrator bool `json:"isAdministrator" gorm:"-"`
 }

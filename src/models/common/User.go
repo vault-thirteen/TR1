@@ -9,15 +9,15 @@ import (
 
 type User struct {
 	MetaData
-	Id                int    `gorm:"primarykey"`
-	Name              string `gorm:"uniqueIndex,size:255"`
-	Email             string `gorm:"uniqueIndex,size:255"`
-	Password          *Password
-	Session           *Session
-	Roles             Roles `gorm:"embedded"`
-	RegTime           time.Time
-	LastBadActionTime *time.Time
-	BanTime           *time.Time
+	Id                int        `json:"id" gorm:"primarykey"`
+	Name              string     `json:"name" gorm:"uniqueIndex,size:255"`
+	Email             string     `json:"email" gorm:"uniqueIndex,size:255"`
+	Password          *Password  `json:"password,omitempty"`
+	Session           *Session   `json:"session,omitempty"`
+	Roles             Roles      `json:"roles" gorm:"embedded"`
+	RegTime           time.Time  `json:"regTime"`
+	LastBadActionTime *time.Time `json:"lastBadActionTime"`
+	BanTime           *time.Time `json:"banTime"`
 }
 
 func IsUserEmailValid(email string) (isValid bool) {
