@@ -3,7 +3,7 @@ module github.com/vault-thirteen/TR1/src
 go 1.22
 
 require (
-	github.com/go-sql-driver/mysql v1.8.1
+	github.com/go-sql-driver/mysql v1.9.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/valord577/mailx v0.6.20240511
 	github.com/vault-thirteen/BytePackedPassword v0.3.17
