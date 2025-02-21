@@ -1,6 +1,7 @@
 package dbc
 
 import (
+	"errors"
 	"gorm.io/gorm"
 	"time"
 
@@ -10,6 +11,22 @@ import (
 
 const (
 	CountOnError = -1
+)
+
+const (
+	UserRoleName_Author = "author"
+	UserRoleName_Writer = "writer"
+	UserRoleName_Reader = "reader"
+)
+
+const (
+	ColumnName_UserRole_Author = "can_create_thread"
+	ColumnName_UserRole_Writer = "can_write_message"
+	ColumnName_UserRole_Reader = "can_read"
+)
+
+const (
+	Err_InvalidUserRoleName = "invalid user role name"
 )
 
 // Common methods.
@@ -451,7 +468,7 @@ func (dbc *DbController) ListAllUsers(page int) (users []cm.User, totalCount int
 
 	return users, totalCount, nil
 }
-func (dbc *DbController) ListSessions(page int) (sessions []cm.Session, totalCount int, err error) {
+func (dbc *DbController) ListUserSessions(page int) (sessions []cm.Session, totalCount int, err error) {
 	model := dbc.db.Preload("User").Model(&cm.Session{})
 
 	totalCount, err = dbc.listItemsOnPageWithTotalCount(model, page, &sessions)
@@ -460,4 +477,52 @@ func (dbc *DbController) ListSessions(page int) (sessions []cm.Session, totalCou
 	}
 
 	return sessions, totalCount, nil
+}
+func (dbc *DbController) GetUserName(user *cm.User) (err error) {
+	tmpUser := new(cm.User)
+	tx := dbc.db.First(tmpUser, "id = ?", user.Id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	user.Name = tmpUser.Name
+	return nil
+}
+func (dbc *DbController) GetUserRoles(user *cm.User) (err error) {
+	tmpUser := new(cm.User)
+	tx := dbc.db.First(tmpUser, "id = ?", user.Id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	user.Roles = tmpUser.Roles
+	return nil
+}
+func (dbc *DbController) GetUserParameters(user *cm.User) (err error) {
+	tx := dbc.db.First(user, "id = ?", user.Id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) SetUserRole(user *cm.User, roleName string, newValue bool) (err error) {
+	var tx *gorm.DB
+
+	switch roleName {
+	case UserRoleName_Author:
+		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update(ColumnName_UserRole_Author, newValue)
+
+	case UserRoleName_Writer:
+		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update(ColumnName_UserRole_Writer, newValue)
+
+	case UserRoleName_Reader:
+		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update(ColumnName_UserRole_Reader, newValue)
+
+	default:
+		return errors.New(Err_InvalidUserRoleName)
+	}
+
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
 }

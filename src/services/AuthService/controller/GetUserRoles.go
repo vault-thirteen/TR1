@@ -10,15 +10,15 @@ import (
 	"github.com/vault-thirteen/TR1/src/models/rpc/error"
 )
 
-func (c *Controller) ListUsers(params *json.RawMessage, _ *jrm1.ResponseMetaData) (result any, re *jrm1.RpcError) {
-	var p *rm.ListUsersParams
+func (c *Controller) GetUserRoles(params *json.RawMessage, _ *jrm1.ResponseMetaData) (result any, re *jrm1.RpcError) {
+	var p *rm.GetUserRolesParams
 	re = jrm1.ParseParameters(params, &p)
 	if re != nil {
 		return nil, re
 	}
 
-	var r *rm.ListUsersResult
-	r, re = c.listUsers(p)
+	var r *rm.GetUserRolesResult
+	r, re = c.getUserRoles(p)
 	if re != nil {
 		return nil, re
 	}
@@ -26,7 +26,7 @@ func (c *Controller) ListUsers(params *json.RawMessage, _ *jrm1.ResponseMetaData
 	return r, nil
 }
 
-func (c *Controller) listUsers(p *rm.ListUsersParams) (result *rm.ListUsersResult, re *jrm1.RpcError) {
+func (c *Controller) getUserRoles(p *rm.GetUserRolesParams) (result *rm.GetUserRolesResult, re *jrm1.RpcError) {
 	var userWithSession *cm.User
 
 	// Access check.
@@ -36,29 +36,31 @@ func (c *Controller) listUsers(p *rm.ListUsersParams) (result *rm.ListUsersResul
 			return nil, re
 		}
 
-		if !userWithSession.Roles.IsAdministrator {
+		if !userWithSession.Roles.CanLogIn {
 			return nil, jrm1.NewRpcErrorByUser(rme.Code_Permission, rme.Msg_Permission, nil)
 		}
 	}
 
 	// Check parameters.
 	{
-		if p.Page == 0 {
-			return nil, jrm1.NewRpcErrorByUser(rme.Code_PageIsNotSet, rme.Msg_PageIsNotSet, nil)
+		if p.User == nil {
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_UserIsNotSet, rme.Msg_UserIsNotSet, nil)
+		}
+		if p.User.Id == 0 {
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_IdIsNotSet, rme.Msg_IdIsNotSet, nil)
 		}
 	}
 
-	dbC := dbc.NewDbControllerWithPageSize(c.GetDb(), c.far.pageSize)
+	dbC := dbc.NewDbController(c.GetDb())
 
-	users, totalCount, err := dbC.ListAllUsers(p.Page)
+	user := &cm.User{Id: p.User.Id}
+	err := dbC.GetUserRoles(user)
 	if err != nil {
 		return nil, c.databaseError(err)
 	}
 
-	c.attachUsersSpecialRoles(users)
+	c.attachUserSpecialRoles(user)
 
-	result = &rm.ListUsersResult{
-		ItemsPaginated: rm.NewItemsPaginated[cm.User](p.Page, c.far.pageSize, users, totalCount),
-	}
+	result = &rm.GetUserRolesResult{User: user}
 	return result, nil
 }

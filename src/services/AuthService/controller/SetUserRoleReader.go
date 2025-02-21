@@ -10,15 +10,15 @@ import (
 	"github.com/vault-thirteen/TR1/src/models/rpc/error"
 )
 
-func (c *Controller) ListSessions(params *json.RawMessage, _ *jrm1.ResponseMetaData) (result any, re *jrm1.RpcError) {
-	var p *rm.ListSessionsParams
+func (c *Controller) SetUserRoleReader(params *json.RawMessage, _ *jrm1.ResponseMetaData) (result any, re *jrm1.RpcError) {
+	var p *rm.SetUserRoleReaderParams
 	re = jrm1.ParseParameters(params, &p)
 	if re != nil {
 		return nil, re
 	}
 
-	var r *rm.ListSessionsResult
-	r, re = c.listSessions(p)
+	var r *rm.SetUserRoleReaderResult
+	r, re = c.setUserRoleReader(p)
 	if re != nil {
 		return nil, re
 	}
@@ -26,7 +26,7 @@ func (c *Controller) ListSessions(params *json.RawMessage, _ *jrm1.ResponseMetaD
 	return r, nil
 }
 
-func (c *Controller) listSessions(p *rm.ListSessionsParams) (result *rm.ListSessionsResult, re *jrm1.RpcError) {
+func (c *Controller) setUserRoleReader(p *rm.SetUserRoleReaderParams) (result *rm.SetUserRoleReaderResult, re *jrm1.RpcError) {
 	var userWithSession *cm.User
 
 	// Access check.
@@ -43,20 +43,24 @@ func (c *Controller) listSessions(p *rm.ListSessionsParams) (result *rm.ListSess
 
 	// Check parameters.
 	{
-		if p.Page == 0 {
-			return nil, jrm1.NewRpcErrorByUser(rme.Code_PageIsNotSet, rme.Msg_PageIsNotSet, nil)
+		if p.User == nil {
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_UserIsNotSet, rme.Msg_UserIsNotSet, nil)
+		}
+		if p.User.Id == 0 {
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_IdIsNotSet, rme.Msg_IdIsNotSet, nil)
 		}
 	}
 
-	dbC := dbc.NewDbControllerWithPageSize(c.GetDb(), c.far.pageSize)
+	dbC := dbc.NewDbController(c.GetDb())
 
-	sessions, totalCount, err := dbC.ListSessions(p.Page)
+	user := &cm.User{Id: p.User.Id}
+	err := dbC.SetUserRole(user, dbc.UserRoleName_Reader, p.IsRoleEnabled)
 	if err != nil {
 		return nil, c.databaseError(err)
 	}
 
-	result = &rm.ListSessionsResult{
-		ItemsPaginated: rm.NewItemsPaginated[cm.Session](p.Page, c.far.pageSize, sessions, totalCount),
+	result = &rm.SetUserRoleReaderResult{
+		Success: rm.Success{OK: true},
 	}
 	return result, nil
 }

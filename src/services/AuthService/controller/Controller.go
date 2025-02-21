@@ -73,8 +73,15 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		c.RejectRegistrationRequestRFA,
 		c.IsUserLoggedIn,
 		c.ListUsers,
-		c.ListSessions,
+		c.ListUserSessions,
 		c.LogUserOutA,
+		c.GetUserName,
+		c.GetUserRoles,
+		c.GetUserParameters,
+		c.SetUserRoleAuthor,
+		c.SetUserRoleWriter,
+		c.SetUserRoleReader,
+		c.GetSelfRoles,
 	}
 }
 
@@ -266,11 +273,49 @@ func (c *Controller) getUserWithSessionByAuthToken(authToken string) (userWithSe
 		return nil, jrm1.NewRpcErrorByUser(rme.Code_SessionIsNotFound, rme.Msg_SessionIsNotFound, nil)
 	}
 
-	// Attach special user roles from settings.
-	userWithSession.Roles.IsModerator = c.isUserModerator(userWithSession.Id)
-	userWithSession.Roles.IsAdministrator = c.isUserAdministrator(userWithSession.Id)
+	c.attachUserSpecialRoles(userWithSession)
 
 	return userWithSession, nil
+}
+func (c *Controller) attachUserSpecialRoles(user *cm.User) {
+	user.Roles.IsModerator = c.isUserModerator(user.Id)
+	user.Roles.IsAdministrator = c.isUserAdministrator(user.Id)
+}
+func (c *Controller) attachUsersSpecialRoles(users []cm.User) {
+	administrators := c.far.roleSettings.GetParameterAsInts(ccp.Administrator)
+	moderators := c.far.roleSettings.GetParameterAsInts(ccp.Moderator)
+
+	for _, user := range users {
+		for _, id := range administrators {
+			if id == user.Id {
+				user.Roles.IsAdministrator = true
+			}
+		}
+
+		for _, id := range moderators {
+			if id == user.Id {
+				user.Roles.IsModerator = true
+			}
+		}
+	}
+}
+func (c *Controller) attachUserSessionsSpecialRoles(userSessions []cm.Session) {
+	administrators := c.far.roleSettings.GetParameterAsInts(ccp.Administrator)
+	moderators := c.far.roleSettings.GetParameterAsInts(ccp.Moderator)
+
+	for _, us := range userSessions {
+		for _, id := range administrators {
+			if id == us.User.Id {
+				us.User.Roles.IsAdministrator = true
+			}
+		}
+
+		for _, id := range moderators {
+			if id == us.User.Id {
+				us.User.Roles.IsModerator = true
+			}
+		}
+	}
 }
 func (c *Controller) isUserAdministrator(userId int) (isAdministrator bool) {
 	for _, id := range c.far.roleSettings.GetParameterAsInts(ccp.Administrator) {
@@ -295,7 +340,7 @@ func (c *Controller) registerUser(rr *cm.RegistrationRequest) (re *jrm1.RpcError
 	var user = &cm.User{
 		Name:  rr.UserName,
 		Email: rr.UserEmail,
-		Roles: cm.Roles{
+		Roles: &cm.Roles{
 			CanLogIn: true,
 			CanRead:  true,
 		},

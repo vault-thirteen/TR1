@@ -1,11 +1,11 @@
 package rm
 
-type ListSessionsParams struct {
+type ListUserSessionsParams struct {
 	CommonParams
 	PageRequested
 }
 
-type ListSessionsResult struct {
+type ListUserSessionsResult struct {
 	CommonResult
 	ItemsPaginated
 }
