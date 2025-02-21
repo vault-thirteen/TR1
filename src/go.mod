@@ -1,6 +1,6 @@
 module github.com/vault-thirteen/TR1/src
 
-go 1.22
+go 1.23
 
 require (
 	github.com/go-sql-driver/mysql v1.9.0
