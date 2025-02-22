@@ -57,31 +57,43 @@ func NewController() (c *Controller) {
 
 func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 	return []jrm1.RpcFunction{
+		// Ping.
 		c.Ping,
+
+		// User registration.
 		c.StartRegistration,
 		c.ConfirmRegistration,
+		c.ListRegistrationRequestsRFA,
+		c.ApproveRegistrationRequestRFA,
+		c.RejectRegistrationRequestRFA,
+
+		// Logging in and out.
 		c.StartLogIn,
 		c.ConfirmLogIn,
 		c.StartLogOut,
 		c.ConfirmLogOut,
-		c.StartEmailChange,
-		c.ConfirmEmailChange,
-		c.StartPasswordChange,
-		c.ConfirmPasswordChange,
-		c.ListRegistrationRequestsRFA,
-		c.ApproveRegistrationRequestRFA,
-		c.RejectRegistrationRequestRFA,
 		c.IsUserLoggedIn,
-		c.ListUsers,
-		c.ListUserSessions,
 		c.LogUserOutA,
+
+		// User properties.
 		c.GetUserName,
 		c.GetUserRoles,
+		c.GetSelfRoles,
 		c.GetUserParameters,
 		c.SetUserRoleAuthor,
 		c.SetUserRoleWriter,
 		c.SetUserRoleReader,
-		c.GetSelfRoles,
+		c.BanUser,
+		c.UnbanUser,
+		c.StartEmailChange,
+		c.ConfirmEmailChange,
+		c.StartPasswordChange,
+		c.ConfirmPasswordChange,
+
+		// Various actions.
+		c.ListUsers,
+		c.ListUserSessions,
+		c.GetUserSession,
 	}
 }
 

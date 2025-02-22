@@ -17,12 +17,7 @@ const (
 	UserRoleName_Author = "author"
 	UserRoleName_Writer = "writer"
 	UserRoleName_Reader = "reader"
-)
-
-const (
-	ColumnName_UserRole_Author = "can_create_thread"
-	ColumnName_UserRole_Writer = "can_write_message"
-	ColumnName_UserRole_Reader = "can_read"
+	UserRoleName_User   = "user"
 )
 
 const (
@@ -508,13 +503,16 @@ func (dbc *DbController) SetUserRole(user *cm.User, roleName string, newValue bo
 
 	switch roleName {
 	case UserRoleName_Author:
-		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update(ColumnName_UserRole_Author, newValue)
+		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update("can_create_thread", newValue)
 
 	case UserRoleName_Writer:
-		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update(ColumnName_UserRole_Writer, newValue)
+		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update("can_write_message", newValue)
 
 	case UserRoleName_Reader:
-		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update(ColumnName_UserRole_Reader, newValue)
+		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update("can_read", newValue)
+
+	case UserRoleName_User:
+		tx = dbc.db.Model(user).Where("id = ?", user.Id).Update("can_log_in", newValue)
 
 	default:
 		return errors.New(Err_InvalidUserRoleName)
