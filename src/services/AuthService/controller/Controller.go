@@ -38,6 +38,7 @@ const (
 	ComponentIndex_RpcClientComponent                 = 4
 	ComponentIndex_VerificationCodeGeneratorComponent = 5
 	ComponentIndex_RpcServerComponent                 = 6
+	ComponentIndex_SchedulerComponent                 = 7
 )
 
 type Controller struct {

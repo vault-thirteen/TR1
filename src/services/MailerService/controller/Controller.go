@@ -18,7 +18,7 @@ import (
 const (
 	ComponentIndex_ErrorListenerComponent = 0
 	ComponentIndex_MailerComponent        = 1
-	ComponentIndex_RpcClientComponent     = 2
+	ComponentIndex_RpcServerComponent     = 2
 )
 
 type Controller struct {
