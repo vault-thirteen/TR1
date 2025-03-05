@@ -57,7 +57,7 @@
           {
             "name": "port",
             "type": "integer",
-            "value": 2005
+            "value": 2004
           },
           {
             "name": "certFile",

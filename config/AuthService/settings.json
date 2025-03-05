@@ -308,38 +308,7 @@
           {
             "name": "port",
             "type": "integer",
-            "value": 2004
-          },
-          {
-            "name": "path",
-            "type": "string",
-            "value": "/"
-          },
-          {
-            "name": "enableSelfSignedCertificate",
-            "type": "boolean",
-            "value": true
-          }
-        ]
-      },
-      {
-        "type": "gateway",
-        "protocol": "https",
-        "parameters": [
-          {
-            "name": "schema",
-            "type": "string",
-            "value": "https"
-          },
-          {
-            "name": "host",
-            "type": "string",
-            "value": "localhost"
-          },
-          {
-            "name": "port",
-            "type": "integer",
-            "value": 2006
+            "value": 2003
           },
           {
             "name": "path",
@@ -370,7 +339,7 @@
           {
             "name": "port",
             "type": "integer",
-            "value": 2003
+            "value": 2002
           },
           {
             "name": "path",
@@ -401,7 +370,7 @@
           {
             "name": "port",
             "type": "integer",
-            "value": 2005
+            "value": 2004
           },
           {
             "name": "path",

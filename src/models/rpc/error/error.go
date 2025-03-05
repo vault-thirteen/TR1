@@ -54,6 +54,8 @@ const (
 	Code_PageIsNotSet                           = 44
 	Code_UserIsNotSet                           = 45
 	Code_IdIsNotSet                             = 46
+	Code_AuthError                              = 47
+	Code_ForumIsNotSet                          = 48
 )
 
 // RPC error messages.
@@ -104,6 +106,8 @@ const (
 	Msg_PageIsNotSet                           = "page is not set"
 	Msg_UserIsNotSet                           = "user is not set"
 	Msg_IdIsNotSet                             = "ID is not set"
+	MsgF_AuthError                             = "auth error: %s"
+	Msg_ForumIsNotSet                          = "forum is not set"
 )
 
 func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {

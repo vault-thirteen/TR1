@@ -26,6 +26,9 @@ IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 CALL :BuildServiceExecutable "MailerService"
 IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 
+CALL :BuildServiceExecutable "MessageService"
+IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
+
 MKDIR %BUILD_DIR%\tool
 
 CALL :BuildToolExecutable "Argon2"

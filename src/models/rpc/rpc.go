@@ -22,13 +22,17 @@ const (
 const (
 	ServiceShortName_Auth    = "auth"
 	ServiceShortName_Captcha = "captcha" // Captcha images (Proxy).
-	ServiceShortName_Gateway = "gateway"
 	ServiceShortName_Mailer  = "mailer"
 	ServiceShortName_Message = "message"
 	ServiceShortName_RCS     = "rcs" // Captcha questions (RPC).
 )
 
 // Function names.
+
+// Auth service.
+const (
+	Func_GetSelfRoles = "GetSelfRoles"
+)
 
 // Captcha service.
 const (

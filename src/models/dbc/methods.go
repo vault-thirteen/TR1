@@ -524,3 +524,65 @@ func (dbc *DbController) SetUserRole(user *cm.User, roleName string, newValue bo
 
 	return nil
 }
+
+// Forums.
+
+func (dbc *DbController) getForumMaxPos() (pos int, err error) {
+	var forum cm.Forum
+	tx := dbc.db.Select("pos").Order("pos DESC").First(&forum)
+	if tx.Error != nil {
+		return -1, tx.Error
+	}
+	return forum.Pos, nil
+}
+func (dbc *DbController) addForum(forum *cm.Forum) (err error) {
+	tx := dbc.db.Create(forum)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) ListAllForums() (forums []cm.Forum, err error) {
+	tx := dbc.db.Order("pos asc").Find(&forums)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return forums, nil
+}
+func (dbc *DbController) AddForum(forumIn *cm.Forum) (forumOut *cm.Forum, err error) {
+	var txErr error
+	var forumsCount int
+	var forumMaxPos = 0
+	var forum cm.Forum
+
+	err = dbc.db.Transaction(func(tx *gorm.DB) error {
+		forumsCount, txErr = dbc.countAllItems(dbc.db.Model(&cm.Forum{}))
+		if txErr != nil {
+			return txErr
+		}
+
+		if forumsCount > 0 {
+			forumMaxPos, txErr = dbc.getForumMaxPos()
+			if txErr != nil {
+				return txErr
+			}
+		}
+
+		forum = cm.Forum{
+			Name: forumIn.Name,
+			Pos:  forumMaxPos + 1,
+		}
+
+		txErr = dbc.addForum(&forum)
+		if txErr != nil {
+			return txErr
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &forum, nil
+}

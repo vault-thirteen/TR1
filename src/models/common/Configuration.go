@@ -43,7 +43,6 @@ const (
 const (
 	ClientType_Auth    = "auth"
 	ClientType_Captcha = "captcha" // Captcha images (Proxy).
-	ClientType_Gateway = "gateway"
 	ClientType_Mailer  = "mailer"
 	ClientType_Message = "message"
 	ClientType_RCS     = "rcs" // Captcha questions (RPC).

@@ -33,11 +33,6 @@ func (c *RpcClientComponent) Init(cfg interfaces.IConfiguration, controller inte
 		return nil, err
 	}
 
-	err = rcc.addClientIfNeeded(cfg, cm.ClientType_Gateway, cm.Protocol_HTTPS, rm.ServiceShortName_Gateway)
-	if err != nil {
-		return nil, err
-	}
-
 	err = rcc.addClientIfNeeded(cfg, cm.ClientType_Mailer, cm.Protocol_HTTPS, rm.ServiceShortName_Mailer)
 	if err != nil {
 		return nil, err
