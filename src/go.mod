@@ -11,7 +11,7 @@ require (
 	github.com/vault-thirteen/JSON-RPC-M1 v0.3.15
 	github.com/vault-thirteen/RingCaptcha v0.11.2
 	github.com/vault-thirteen/auxie v0.28.3
-	golang.org/x/term v0.29.0
+	golang.org/x/term v0.30.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
 )
@@ -27,6 +27,6 @@ require (
 	github.com/vault-thirteen/Simple-File-Server v0.16.2 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/image v0.24.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 )
