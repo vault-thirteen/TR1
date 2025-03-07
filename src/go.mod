@@ -10,7 +10,7 @@ require (
 	github.com/vault-thirteen/Cache v0.17.2
 	github.com/vault-thirteen/JSON-RPC-M1 v0.3.15
 	github.com/vault-thirteen/RingCaptcha v0.11.2
-	github.com/vault-thirteen/auxie v0.28.3
+	github.com/vault-thirteen/auxie v0.28.4
 	golang.org/x/term v0.30.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
