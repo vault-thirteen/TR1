@@ -11,6 +11,7 @@ import (
 
 const (
 	CountOnError = -1
+	TmpForumPos  = -1
 )
 
 const (
@@ -22,6 +23,7 @@ const (
 
 const (
 	Err_InvalidUserRoleName = "invalid user role name"
+	Err_NoRowsUpdated       = "no rows updated"
 )
 
 // Common methods.
@@ -535,10 +537,44 @@ func (dbc *DbController) getForumMaxPos() (pos int, err error) {
 	}
 	return forum.Pos, nil
 }
+func (dbc *DbController) getForumPreviousPos(curPos int) (pos int, err error) {
+	var forum cm.Forum
+	tx := dbc.db.Select("pos").Where("pos < ?", curPos).Order("pos DESC").First(&forum)
+	if tx.Error != nil {
+		return -1, tx.Error
+	}
+	return forum.Pos, nil
+}
+func (dbc *DbController) getForumNextPos(curPos int) (pos int, err error) {
+	var forum cm.Forum
+	tx := dbc.db.Select("pos").Where("pos > ?", curPos).Order("pos ASC").First(&forum)
+	if tx.Error != nil {
+		return -1, tx.Error
+	}
+	return forum.Pos, nil
+}
 func (dbc *DbController) addForum(forum *cm.Forum) (err error) {
 	tx := dbc.db.Create(forum)
 	if tx.Error != nil {
 		return tx.Error
+	}
+	return nil
+}
+func (dbc *DbController) getForumById(forumIn *cm.Forum) (forumOut *cm.Forum, err error) {
+	var forum cm.Forum
+	tx := dbc.db.First(&forum, forumIn.Id)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return &forum, nil
+}
+func (dbc *DbController) updateForumPos(oldPos, newPos int) (err error) {
+	tx := dbc.db.Model(&cm.Forum{}).Where("pos = ?", oldPos).Update("pos", newPos)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
 	}
 	return nil
 }
@@ -550,12 +586,12 @@ func (dbc *DbController) ListAllForums() (forums []cm.Forum, err error) {
 	return forums, nil
 }
 func (dbc *DbController) AddForum(forumIn *cm.Forum) (forumOut *cm.Forum, err error) {
-	var txErr error
 	var forumsCount int
 	var forumMaxPos = 0
 	var forum cm.Forum
 
 	err = dbc.db.Transaction(func(tx *gorm.DB) error {
+		var txErr error
 		forumsCount, txErr = dbc.countAllItems(dbc.db.Model(&cm.Forum{}))
 		if txErr != nil {
 			return txErr
@@ -585,4 +621,106 @@ func (dbc *DbController) AddForum(forumIn *cm.Forum) (forumOut *cm.Forum, err er
 	}
 
 	return &forum, nil
+}
+func (dbc *DbController) ChangeForumName(forumIn *cm.Forum) (err error) {
+	tx := dbc.db.Model(&cm.Forum{}).Where("id = ?", forumIn.Id).Update("name", forumIn.Name)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+func (dbc *DbController) GetForum(forumIn *cm.Forum) (forumOut *cm.Forum, err error) {
+	return dbc.getForumById(forumIn)
+}
+func (dbc *DbController) MoveForumUp(forum *cm.Forum) (err error) {
+	forum, err = dbc.getForumById(forum)
+	if err != nil {
+		return err
+	}
+	var curPos = forum.Pos
+
+	var prevPos int
+	prevPos, err = dbc.getForumPreviousPos(curPos)
+	if err != nil {
+		return err
+	}
+
+	// Swap values. Since SQL standard does not support such functionality, we
+	// "invent a wheel" here, i.e. use a temporary value in order not to break
+	// the 'unique' restriction.
+	err = dbc.db.Transaction(func(tx *gorm.DB) error {
+		var txErr error
+		txErr = dbc.updateForumPos(prevPos, TmpForumPos)
+		if txErr != nil {
+			return txErr
+		}
+
+		txErr = dbc.updateForumPos(curPos, prevPos)
+		if txErr != nil {
+			return txErr
+		}
+
+		txErr = dbc.updateForumPos(TmpForumPos, curPos)
+		if txErr != nil {
+			return txErr
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (dbc *DbController) MoveForumDown(forum *cm.Forum) (err error) {
+	forum, err = dbc.getForumById(forum)
+	if err != nil {
+		return err
+	}
+	var curPos = forum.Pos
+
+	var nextPos int
+	nextPos, err = dbc.getForumNextPos(curPos)
+	if err != nil {
+		return err
+	}
+
+	// Swap values. Since SQL standard does not support such functionality, we
+	// "invent a wheel" here, i.e. use a temporary value in order not to break
+	// the 'unique' restriction.
+	err = dbc.db.Transaction(func(tx *gorm.DB) error {
+		var txErr error
+		txErr = dbc.updateForumPos(nextPos, TmpForumPos)
+		if txErr != nil {
+			return txErr
+		}
+
+		txErr = dbc.updateForumPos(curPos, nextPos)
+		if txErr != nil {
+			return txErr
+		}
+
+		txErr = dbc.updateForumPos(TmpForumPos, curPos)
+		if txErr != nil {
+			return txErr
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (dbc *DbController) DeleteForum(forum *cm.Forum) (err error) {
+	tx := dbc.db.Delete(forum)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }

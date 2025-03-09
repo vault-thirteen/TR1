@@ -50,6 +50,11 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		// Forums.
 		c.AddForum,
 		c.ListForums,
+		c.GetForum,
+		c.ChangeForumName,
+		c.MoveForumUp,
+		c.MoveForumDown,
+		c.DeleteForum,
 	}
 }
 
