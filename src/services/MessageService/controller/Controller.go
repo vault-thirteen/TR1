@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/vault-thirteen/JSON-RPC-M1"
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/libraries/scheduler"
 	"github.com/vault-thirteen/TR1/src/models/common"
+	"github.com/vault-thirteen/TR1/src/models/dbc"
 	"github.com/vault-thirteen/TR1/src/models/rpc"
 	"github.com/vault-thirteen/TR1/src/models/rpc/error"
 	"github.com/vault-thirteen/TR1/src/services/common/components/DatabaseComponent"
@@ -62,6 +64,13 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		c.ChangeThreadName,
 		c.ChangeThreadForum,
 		c.DeleteThread,
+
+		// Message.
+		c.AddMessage,
+		c.GetMessage,
+		c.ChangeMessageText,
+		c.ChangeMessageThread,
+		c.DeleteMessage,
 	}
 }
 
@@ -99,6 +108,7 @@ func (c *Controller) initFAR() {
 	c.far.authServiceClient = c.far.rcc.GetClientMap()[rm.ServiceShortName_Auth]
 
 	c.far.pageSize = c.far.systemSettings.GetParameterAsInt(ccp.PageSize)
+	c.far.messageEditTime = c.far.systemSettings.GetParameterAsInt(ccp.MessageEditTime)
 
 	c.far.dbc = dc.FromAny(c.service.GetComponentByIndex(ComponentIndex_DatabaseComponent))
 	c.far.db = c.far.dbc.GetGormDb()
@@ -111,6 +121,7 @@ func (c *Controller) prepareDb() (err error) {
 		classesToInit := []any{
 			&cm.Forum{},
 			&cm.Thread{},
+			&cm.Message{},
 		}
 
 		for _, cti := range classesToInit {
@@ -170,4 +181,97 @@ func (c *Controller) getSelfRoles(params rm.GetSelfRolesParams) (user *cm.User, 
 	}
 
 	return result.User, nil
+}
+
+func (c *Controller) canUserAddMessage(user *cm.User, thread *cm.Thread) (ok bool, re *jrm1.RpcError) {
+	// Fool check.
+	{
+		if user == nil {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_UserIsNotSet, rme.Msg_UserIsNotSet, nil)
+		}
+		if user.Id == 0 {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_IdIsNotSet, rme.Msg_IdIsNotSet, nil)
+		}
+		if thread == nil {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_ThreadIsNotSet, rme.Msg_ThreadIsNotSet, nil)
+		}
+		if thread.Id == 0 {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_IdIsNotSet, rme.Msg_IdIsNotSet, nil)
+		}
+	}
+
+	if !user.Roles.CanWriteMessage {
+		return false, nil
+	}
+
+	dbC := dbc.NewDbControllerWithPageSize(c.GetDb(), c.far.pageSize)
+
+	messageCount, err := dbC.CountThreadMessages(thread)
+	if err != nil {
+		return false, c.databaseError(err)
+	}
+	if messageCount == 0 {
+		return true, nil
+	}
+
+	var lastMessage *cm.Message
+	lastMessage, err = dbC.GetThreadLastMessage(thread)
+	if err != nil {
+		return false, c.databaseError(err)
+	}
+
+	if lastMessage.CreatorId != user.Id {
+		return true, nil
+	}
+
+	messageAge := time.Since(lastMessage.CreatedAt).Seconds()
+	if messageAge < float64(c.far.messageEditTime) {
+		return false, nil
+	}
+
+	return true, nil
+}
+func (c *Controller) canUserChangeMessageText(user *cm.User, message *cm.Message) (ok bool, re *jrm1.RpcError) {
+	// Fool check.
+	{
+		if user == nil {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_UserIsNotSet, rme.Msg_UserIsNotSet, nil)
+		}
+		if user.Id == 0 {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_IdIsNotSet, rme.Msg_IdIsNotSet, nil)
+		}
+		if message == nil {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_MessageIsNotSet, rme.Msg_MessageIsNotSet, nil)
+		}
+		if message.Id == 0 {
+			return false, jrm1.NewRpcErrorByUser(rme.Code_IdIsNotSet, rme.Msg_IdIsNotSet, nil)
+		}
+	}
+
+	if user.Roles.IsModerator {
+		return true, nil
+	}
+
+	if !user.Roles.CanWriteMessage {
+		return false, nil
+	}
+
+	dbC := dbc.NewDbControllerWithPageSize(c.GetDb(), c.far.pageSize)
+
+	var err error
+	message, err = dbC.GetMessage(message)
+	if err != nil {
+		return false, c.databaseError(err)
+	}
+
+	if message.CreatorId != user.Id {
+		return false, nil
+	}
+
+	messageAge := time.Since(message.CreatedAt).Seconds()
+	if messageAge >= float64(c.far.messageEditTime) {
+		return false, nil
+	}
+
+	return true, nil
 }

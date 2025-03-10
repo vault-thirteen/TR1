@@ -48,6 +48,7 @@ const (
 	LogInRequestTtl              = "logInRequestTtl"
 	LogOutRequestTtl             = "logOutRequestTtl"
 	MaxAllowedPacket             = "maxAllowedPacket"
+	MessageEditTime              = "messageEditTime"
 	Moderator                    = "moderator"
 	Name                         = "name"
 	Net                          = "net"

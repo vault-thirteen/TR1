@@ -14,7 +14,8 @@ type ControllerFastAccessRegistry struct {
 
 	authServiceClient *rmc.Client
 
-	pageSize int
+	pageSize        int
+	messageEditTime int
 
 	dbc *dc.DatabaseComponent
 	db  *gorm.DB

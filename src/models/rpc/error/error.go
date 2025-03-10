@@ -57,6 +57,10 @@ const (
 	Code_AuthError                              = 47
 	Code_ForumIsNotSet                          = 48
 	Code_ThreadIsNotSet                         = 49
+	Code_MessageIsNotSet                        = 50
+	Code_TextIsNotSet                           = 51
+	Code_UserCanNotAddMessage                   = 52
+	Code_UserCanNotChangeMessageText            = 53
 )
 
 // RPC error messages.
@@ -110,6 +114,10 @@ const (
 	MsgF_AuthError                             = "auth error: %s"
 	Msg_ForumIsNotSet                          = "forum is not set"
 	Msg_ThreadIsNotSet                         = "thread is not set"
+	Msg_MessageIsNotSet                        = "message is not set"
+	Msg_TextIsNotSet                           = "text is not set"
+	Msg_UserCanNotAddMessage                   = "user can not add message"
+	Msg_UserCanNotChangeMessageText            = "user can not change message text"
 )
 
 func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {

@@ -25,6 +25,11 @@
             "name": "pageSize",
             "type": "integer",
             "value": 20
+          },
+          {
+            "name": "messageEditTime",
+            "type": "integer",
+            "value": 300
           }
         ]
       },

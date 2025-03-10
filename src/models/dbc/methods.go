@@ -445,7 +445,7 @@ func (dbc *DbController) DeletePasswordChangeRequest(pcr *cm.PasswordChangeReque
 	return nil
 }
 
-// Users & Sessions.
+// User & Session.
 
 func (dbc *DbController) FindUserSession(user *cm.User) (session *cm.Session, err error) {
 	session = new(cm.Session)
@@ -527,7 +527,7 @@ func (dbc *DbController) SetUserRole(user *cm.User, roleName string, newValue bo
 	return nil
 }
 
-// Forums.
+// Forum.
 
 func (dbc *DbController) getForumMaxPos() (pos int, err error) {
 	var forum cm.Forum
@@ -728,7 +728,7 @@ func (dbc *DbController) DeleteForum(forum *cm.Forum) (err error) {
 	return nil
 }
 
-// Threads.
+// Thread.
 
 func (dbc *DbController) getThreadById(threadIn *cm.Thread) (threadOut *cm.Thread, err error) {
 	var thread cm.Thread
@@ -776,6 +776,97 @@ func (dbc *DbController) ChangeThreadForum(thread *cm.Thread) (err error) {
 }
 func (dbc *DbController) DeleteThread(thread *cm.Thread) (err error) {
 	tx := dbc.db.Delete(thread)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+func (dbc *DbController) TouchThread(thread *cm.Thread) (err error) {
+	tx := dbc.db.Model(&cm.Thread{}).Where("id = ?", thread.Id).Update("updated_at", time.Now())
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+
+// Message.
+
+func (dbc *DbController) CountThreadMessages(thread *cm.Thread) (n int, err error) {
+	var n64 int64
+	tx := dbc.db.Model(&cm.Message{}).Where("thread_id = ?", thread.Id).Count(&n64)
+	if tx.Error != nil {
+		return CountOnError, tx.Error
+	}
+	return int(n64), nil
+}
+func (dbc *DbController) GetThreadLastMessage(thread *cm.Thread) (messageOut *cm.Message, err error) {
+	var message cm.Message
+	tx := dbc.db.Where("thread_id = ?", thread.Id).Order("created_at DESC").First(&message)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return &message, nil
+}
+func (dbc *DbController) AddMessage(user *cm.User, thread *cm.Thread, messageIn *cm.Message) (messageOut *cm.Message, err error) {
+	message := cm.Message{
+		Text:      messageIn.Text,
+		ThreadId:  thread.Id,
+		CreatorId: user.Id,
+	}
+
+	tx := dbc.db.Create(&message)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	return &message, nil
+}
+func (dbc *DbController) GetMessage(messageIn *cm.Message) (messageOut *cm.Message, err error) {
+	var message cm.Message
+	tx := dbc.db.First(&message, messageIn.Id)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return &message, nil
+}
+func (dbc *DbController) ChangeMessageText(user *cm.User, messageIn *cm.Message) (err error) {
+	tx := dbc.db.Model(&cm.Message{}).Where("id = ?", messageIn.Id).Updates(
+		map[string]interface{}{
+			"text":      messageIn.Text,
+			"editor_id": user.Id,
+		},
+	)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+func (dbc *DbController) ChangeMessageThread(user *cm.User, messageIn *cm.Message) (err error) {
+	tx := dbc.db.Model(&cm.Message{}).Where("id = ?", messageIn.Id).Updates(
+		map[string]interface{}{
+			"thread_id": messageIn.ThreadId,
+			"editor_id": user.Id,
+		},
+	)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+func (dbc *DbController) DeleteMessage(message *cm.Message) (err error) {
+	tx := dbc.db.Delete(message)
 	if tx.Error != nil {
 		return tx.Error
 	}
