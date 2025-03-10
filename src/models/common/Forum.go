@@ -2,8 +2,9 @@ package cm
 
 type Forum struct {
 	MetaData
-	Id   int    `json:"id" gorm:"primarykey"`
-	Name string `json:"name" gorm:"uniqueIndex,size:255"`
+	Id      int    `json:"id" gorm:"primarykey"`
+	Name    string `json:"name" gorm:"uniqueIndex,size:255"`
+	Threads []Thread
 
 	// Forum's position in the list of all forums.
 	// 1 = top position; the greater number is, the lower the position is.

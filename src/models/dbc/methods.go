@@ -578,13 +578,6 @@ func (dbc *DbController) updateForumPos(oldPos, newPos int) (err error) {
 	}
 	return nil
 }
-func (dbc *DbController) ListAllForums() (forums []cm.Forum, err error) {
-	tx := dbc.db.Order("pos asc").Find(&forums)
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-	return forums, nil
-}
 func (dbc *DbController) AddForum(forumIn *cm.Forum) (forumOut *cm.Forum, err error) {
 	var forumsCount int
 	var forumMaxPos = 0
@@ -622,8 +615,18 @@ func (dbc *DbController) AddForum(forumIn *cm.Forum) (forumOut *cm.Forum, err er
 
 	return &forum, nil
 }
-func (dbc *DbController) ChangeForumName(forumIn *cm.Forum) (err error) {
-	tx := dbc.db.Model(&cm.Forum{}).Where("id = ?", forumIn.Id).Update("name", forumIn.Name)
+func (dbc *DbController) GetForum(forumIn *cm.Forum) (forumOut *cm.Forum, err error) {
+	return dbc.getForumById(forumIn)
+}
+func (dbc *DbController) ListAllForums() (forums []cm.Forum, err error) {
+	tx := dbc.db.Order("pos asc").Find(&forums)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return forums, nil
+}
+func (dbc *DbController) ChangeForumName(forum *cm.Forum) (err error) {
+	tx := dbc.db.Model(&cm.Forum{}).Where("id = ?", forum.Id).Update("name", forum.Name)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -631,9 +634,6 @@ func (dbc *DbController) ChangeForumName(forumIn *cm.Forum) (err error) {
 		return errors.New(Err_NoRowsUpdated)
 	}
 	return nil
-}
-func (dbc *DbController) GetForum(forumIn *cm.Forum) (forumOut *cm.Forum, err error) {
-	return dbc.getForumById(forumIn)
 }
 func (dbc *DbController) MoveForumUp(forum *cm.Forum) (err error) {
 	forum, err = dbc.getForumById(forum)
@@ -721,6 +721,66 @@ func (dbc *DbController) DeleteForum(forum *cm.Forum) (err error) {
 	tx := dbc.db.Delete(forum)
 	if tx.Error != nil {
 		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+
+// Threads.
+
+func (dbc *DbController) getThreadById(threadIn *cm.Thread) (threadOut *cm.Thread, err error) {
+	var thread cm.Thread
+	tx := dbc.db.First(&thread, threadIn.Id)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return &thread, nil
+}
+func (dbc *DbController) AddThread(forum *cm.Forum, threadIn *cm.Thread) (threadOut *cm.Thread, err error) {
+	thread := cm.Thread{
+		Name:    threadIn.Name,
+		ForumId: forum.Id,
+	}
+
+	tx := dbc.db.Create(&thread)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	return &thread, nil
+}
+func (dbc *DbController) GetThread(threadIn *cm.Thread) (threadOut *cm.Thread, err error) {
+	return dbc.getThreadById(threadIn)
+}
+func (dbc *DbController) ChangeThreadName(thread *cm.Thread) (err error) {
+	tx := dbc.db.Model(&cm.Thread{}).Where("id = ?", thread.Id).Update("name", thread.Name)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+func (dbc *DbController) ChangeThreadForum(thread *cm.Thread) (err error) {
+	tx := dbc.db.Model(&cm.Thread{}).Where("id = ?", thread.Id).Update("forum_id", thread.ForumId)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
+	}
+	return nil
+}
+func (dbc *DbController) DeleteThread(thread *cm.Thread) (err error) {
+	tx := dbc.db.Delete(thread)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected != 1 {
+		return errors.New(Err_NoRowsUpdated)
 	}
 	return nil
 }

@@ -47,14 +47,21 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		// Ping.
 		c.Ping,
 
-		// Forums.
+		// Forum.
 		c.AddForum,
-		c.ListForums,
 		c.GetForum,
+		c.ListForums,
 		c.ChangeForumName,
 		c.MoveForumUp,
 		c.MoveForumDown,
 		c.DeleteForum,
+
+		// Thread.
+		c.AddThread,
+		c.GetThread,
+		c.ChangeThreadName,
+		c.ChangeThreadForum,
+		c.DeleteThread,
 	}
 }
 
@@ -103,6 +110,7 @@ func (c *Controller) prepareDb() (err error) {
 	if c.far.systemSettings.GetParameterAsBool(ccp.IsDatabaseInitialisationUsed) {
 		classesToInit := []any{
 			&cm.Forum{},
+			&cm.Thread{},
 		}
 
 		for _, cti := range classesToInit {
