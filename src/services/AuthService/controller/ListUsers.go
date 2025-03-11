@@ -50,7 +50,7 @@ func (c *Controller) listUsers(p *rm.ListUsersParams) (result *rm.ListUsersResul
 
 	dbC := dbc.NewDbControllerWithPageSize(c.GetDb(), c.far.pageSize)
 
-	users, totalCount, err := dbC.ListAllUsers(p.Page)
+	users, totalCount, err := dbC.ListUsers(p.Page)
 	if err != nil {
 		return nil, c.databaseError(err)
 	}

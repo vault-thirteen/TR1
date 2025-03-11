@@ -455,7 +455,7 @@ func (dbc *DbController) FindUserSession(user *cm.User) (session *cm.Session, er
 	}
 	return session, nil
 }
-func (dbc *DbController) ListAllUsers(page int) (users []cm.User, totalCount int, err error) {
+func (dbc *DbController) ListUsers(page int) (users []cm.User, totalCount int, err error) {
 	model := dbc.db.Model(&cm.User{})
 
 	totalCount, err = dbc.listItemsOnPageWithTotalCount(model, page, &users)
@@ -754,6 +754,16 @@ func (dbc *DbController) AddThread(forum *cm.Forum, threadIn *cm.Thread) (thread
 func (dbc *DbController) GetThread(threadIn *cm.Thread) (threadOut *cm.Thread, err error) {
 	return dbc.getThreadById(threadIn)
 }
+func (dbc *DbController) ListThreads(forum *cm.Forum, page int) (threads []cm.Thread, totalCount int, err error) {
+	model := dbc.db.Model(&cm.Thread{}).Where("forum_id = ?", forum.Id).Order("updated_at DESC")
+
+	totalCount, err = dbc.listItemsOnPageWithTotalCount(model, page, &threads)
+	if err != nil {
+		return nil, totalCount, err
+	}
+
+	return threads, totalCount, nil
+}
 func (dbc *DbController) ChangeThreadName(thread *cm.Thread) (err error) {
 	tx := dbc.db.Model(&cm.Thread{}).Where("id = ?", thread.Id).Update("name", thread.Name)
 	if tx.Error != nil {
@@ -834,6 +844,16 @@ func (dbc *DbController) GetMessage(messageIn *cm.Message) (messageOut *cm.Messa
 		return nil, tx.Error
 	}
 	return &message, nil
+}
+func (dbc *DbController) ListMessages(thread *cm.Thread, page int) (messages []cm.Message, totalCount int, err error) {
+	model := dbc.db.Model(&cm.Message{}).Where("thread_id = ?", thread.Id).Order("created_at ASC")
+
+	totalCount, err = dbc.listItemsOnPageWithTotalCount(model, page, &messages)
+	if err != nil {
+		return nil, totalCount, err
+	}
+
+	return messages, totalCount, nil
 }
 func (dbc *DbController) ChangeMessageText(user *cm.User, messageIn *cm.Message) (err error) {
 	tx := dbc.db.Model(&cm.Message{}).Where("id = ?", messageIn.Id).Updates(

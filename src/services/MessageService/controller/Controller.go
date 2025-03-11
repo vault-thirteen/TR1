@@ -61,6 +61,7 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		// Thread.
 		c.AddThread,
 		c.GetThread,
+		c.ListThreads,
 		c.ChangeThreadName,
 		c.ChangeThreadForum,
 		c.DeleteThread,
@@ -68,6 +69,7 @@ func (c *Controller) GetRpcFunctions() []jrm1.RpcFunction {
 		// Message.
 		c.AddMessage,
 		c.GetMessage,
+		c.ListMessages,
 		c.ChangeMessageText,
 		c.ChangeMessageThread,
 		c.DeleteMessage,
