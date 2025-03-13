@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/models/common"
+	"github.com/vault-thirteen/TR1/src/models/rpc"
 	"github.com/vault-thirteen/TR1/src/services/MessageService/controller"
-	"github.com/vault-thirteen/TR1/src/services/common"
 	"github.com/vault-thirteen/TR1/src/services/common/components/DatabaseComponent"
 	"github.com/vault-thirteen/TR1/src/services/common/components/ErrorListenerComponent"
 	"github.com/vault-thirteen/TR1/src/services/common/components/RpcClientComponent"
@@ -26,7 +26,7 @@ func main() {
 	var controller interfaces.IController
 	controller = c.NewController()
 
-	app, err := cm.NewApplication(common.ServiceName_MessageService, serviceComponents, controller)
+	app, err := cm.NewApplication(rm.ServiceName_MessageService, serviceComponents, controller)
 	mustBeNoError(err)
 
 	err = app.Use()

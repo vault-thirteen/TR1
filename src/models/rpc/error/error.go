@@ -8,6 +8,7 @@ import (
 
 // RPC error codes.
 const (
+	Code_UnknownRpcError                        = 0
 	Code_FeatureIsNotImplemented                = 1
 	Code_Database                               = 2
 	Code_Authorisation                          = 3
@@ -65,6 +66,7 @@ const (
 
 // RPC error messages.
 const (
+	Msg_UnknownRpcError                        = "unknown rpc error"
 	MsgMsg_FeatureIsNotImplemented             = "feature is not implemented"
 	Msg_Database                               = "database error"
 	Msg_Authorisation                          = "authorisation error"
@@ -122,6 +124,7 @@ const (
 
 func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
 	return map[int]int{
+		Code_UnknownRpcError:                        http.StatusInternalServerError,
 		Code_FeatureIsNotImplemented:                http.StatusInternalServerError,
 		Code_Database:                               http.StatusInternalServerError,
 		Code_Authorisation:                          http.StatusUnauthorized,
@@ -167,6 +170,13 @@ func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
 		Code_PageIsNotSet:                           http.StatusBadRequest,
 		Code_UserIsNotSet:                           http.StatusBadRequest,
 		Code_IdIsNotSet:                             http.StatusBadRequest,
+		Code_AuthError:                              http.StatusForbidden,
+		Code_ForumIsNotSet:                          http.StatusBadRequest,
+		Code_ThreadIsNotSet:                         http.StatusBadRequest,
+		Code_MessageIsNotSet:                        http.StatusBadRequest,
+		Code_TextIsNotSet:                           http.StatusBadRequest,
+		Code_UserCanNotAddMessage:                   http.StatusForbidden,
+		Code_UserCanNotChangeMessageText:            http.StatusForbidden,
 	}
 }
 

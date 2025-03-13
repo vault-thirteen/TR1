@@ -23,6 +23,9 @@ IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 CALL :BuildServiceExecutable "CaptchaService"
 IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 
+CALL :BuildServiceExecutable "GatewayService"
+IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
+
 CALL :BuildServiceExecutable "MailerService"
 IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 
@@ -38,8 +41,9 @@ CALL :BuildToolExecutable "MakeJWToken"
 IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 
 ECHO Copying files ...
-XCOPY config %BUILD_DIR%\config /S/I/Q
+XCOPY assets %BUILD_DIR%\assets /S/I/Q
 XCOPY cert %BUILD_DIR%\cert /S/I/Q
+XCOPY config %BUILD_DIR%\config /S/I/Q
 XCOPY script\start_service_*.bat %BUILD_DIR%\ /Q
 XCOPY script\start_tool_*.bat %BUILD_DIR%\ /Q
 

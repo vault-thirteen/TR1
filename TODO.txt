@@ -1,0 +1,2 @@
+1. Add temporary folder for Captchas in config file and build script.
+2. Change temporary settings to normal default values.

@@ -21,6 +21,7 @@ const (
 const (
 	Component_Captcha  = "captcha"  // Captcha settings.
 	Component_Database = "database" // Database settings.
+	Component_SFS      = "sfs"      // Static Files Server settings.
 	Component_Jwt      = "jwt"      // JWT settings.
 	Component_Message  = "message"  // Message settings.
 	Component_Role     = "role"     // Role settings.
