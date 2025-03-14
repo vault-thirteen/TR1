@@ -2,9 +2,9 @@ package c
 
 import (
 	"github.com/vault-thirteen/Simple-File-Server"
+	"github.com/vault-thirteen/TR1/src/components/HttpServerComponent"
+	"github.com/vault-thirteen/TR1/src/components/RpcClientComponent"
 	"github.com/vault-thirteen/TR1/src/models/rpc/Client"
-	"github.com/vault-thirteen/TR1/src/services/common/components/HttpServerComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/RpcClientComponent"
 	"github.com/vault-thirteen/TR1/src/shared/CommonConfigurationServiceEntry"
 )
 

@@ -5,10 +5,10 @@ import (
 
 	"github.com/vault-thirteen/JSON-RPC-M1"
 	rcs "github.com/vault-thirteen/RingCaptcha/server"
+	"github.com/vault-thirteen/TR1/src/components/CaptchaComponent"
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/libraries/scheduler"
 	"github.com/vault-thirteen/TR1/src/models/common"
-	"github.com/vault-thirteen/TR1/src/services/common/components/CaptchaComponent"
 	"github.com/vault-thirteen/TR1/src/shared/CommonConfigurationParameter"
 )
 

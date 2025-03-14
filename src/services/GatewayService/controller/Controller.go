@@ -4,13 +4,13 @@ import (
 	"log"
 
 	"github.com/vault-thirteen/JSON-RPC-M1"
+	"github.com/vault-thirteen/TR1/src/components/HttpServerComponent"
+	"github.com/vault-thirteen/TR1/src/components/RpcClientComponent"
+	"github.com/vault-thirteen/TR1/src/components/StaticFileServerComponent"
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/libraries/scheduler"
 	"github.com/vault-thirteen/TR1/src/models/common"
 	"github.com/vault-thirteen/TR1/src/models/rpc"
-	"github.com/vault-thirteen/TR1/src/services/common/components/HttpServerComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/RpcClientComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/StaticFileServerComponent"
 	"github.com/vault-thirteen/TR1/src/shared/CommonConfigurationParameter"
 )
 

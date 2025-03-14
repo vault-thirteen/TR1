@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/vault-thirteen/TR1/src/components/CaptchaComponent"
+	"github.com/vault-thirteen/TR1/src/components/ErrorListenerComponent"
+	"github.com/vault-thirteen/TR1/src/components/RpcServerComponent"
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/models/common"
 	"github.com/vault-thirteen/TR1/src/models/rpc"
 	"github.com/vault-thirteen/TR1/src/services/CaptchaService/controller"
-	"github.com/vault-thirteen/TR1/src/services/common/components/CaptchaComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/ErrorListenerComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/RpcServerComponent"
 )
 
 func main() {

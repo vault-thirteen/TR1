@@ -5,11 +5,11 @@ import (
 	"sync"
 
 	"github.com/vault-thirteen/JSON-RPC-M1"
+	"github.com/vault-thirteen/TR1/src/components/MailerComponent"
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/libraries/mailer"
 	"github.com/vault-thirteen/TR1/src/libraries/scheduler"
 	"github.com/vault-thirteen/TR1/src/models/common"
-	"github.com/vault-thirteen/TR1/src/services/common/components/MailerComponent"
 	"github.com/vault-thirteen/TR1/src/shared/CommonConfigurationParameter"
 )
 

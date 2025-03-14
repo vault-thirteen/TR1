@@ -1,18 +1,18 @@
 package main
 
 import (
+	"github.com/vault-thirteen/TR1/src/components/DatabaseComponent"
+	"github.com/vault-thirteen/TR1/src/components/ErrorListenerComponent"
+	"github.com/vault-thirteen/TR1/src/components/JwtManagerComponent"
+	"github.com/vault-thirteen/TR1/src/components/RequestIdGeneratorComponent"
+	"github.com/vault-thirteen/TR1/src/components/RpcClientComponent"
+	"github.com/vault-thirteen/TR1/src/components/RpcServerComponent"
+	"github.com/vault-thirteen/TR1/src/components/SchedulerComponent"
+	"github.com/vault-thirteen/TR1/src/components/VerificationCodeGeneratorComponent"
 	"github.com/vault-thirteen/TR1/src/interfaces"
 	"github.com/vault-thirteen/TR1/src/models/common"
 	"github.com/vault-thirteen/TR1/src/models/rpc"
 	"github.com/vault-thirteen/TR1/src/services/AuthService/controller"
-	"github.com/vault-thirteen/TR1/src/services/common/components/DatabaseComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/ErrorListenerComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/JwtManagerComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/RequestIdGeneratorComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/RpcClientComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/RpcServerComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/SchedulerComponent"
-	"github.com/vault-thirteen/TR1/src/services/common/components/VerificationCodeGeneratorComponent"
 )
 
 func main() {
