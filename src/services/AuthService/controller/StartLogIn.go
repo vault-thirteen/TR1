@@ -39,7 +39,10 @@ func (c *Controller) startLogIn(p *rm.StartLogInParams) (result *rm.StartLogInRe
 
 	// Check parameters.
 	{
-		if len(p.UserEmail) == 0 {
+		if p.User == nil {
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_UserIsNotSet, rme.Msg_UserIsNotSet, nil)
+		}
+		if len(p.User.Email) == 0 {
 			return nil, jrm1.NewRpcErrorByUser(rme.Code_EmailIsNotSet, rme.Msg_EmailIsNotSet, nil)
 		}
 	}
@@ -51,15 +54,15 @@ func (c *Controller) startLogIn(p *rm.StartLogInParams) (result *rm.StartLogInRe
 	// Check for existing user & log-in request with e-mail.
 	{
 		var exists bool
-		exists, err = dbC.ExistsLogInRequestWithUserEmail(p.UserEmail)
+		exists, err = dbC.ExistsLogInRequestWithUserEmail(p.User.Email)
 		if err != nil {
 			return nil, c.databaseError(err)
 		}
 		if exists {
-			return nil, jrm1.NewRpcErrorByUser(rme.Code_LogInRequestWithUserEmailExists, rme.Msg_LogInRequestWithUserEmailExists, p.UserEmail)
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_LogInRequestWithUserEmailExists, rme.Msg_LogInRequestWithUserEmailExists, p.User.Email)
 		}
 
-		user = &cm.User{Email: p.UserEmail}
+		user = &cm.User{Email: p.User.Email}
 		err = dbC.GetUserByEmailAbleToLogIn(user)
 		if err != nil {
 			return nil, c.databaseError(err)
@@ -86,7 +89,7 @@ func (c *Controller) startLogIn(p *rm.StartLogInParams) (result *rm.StartLogInRe
 			return nil, re
 		}
 
-		re = c.sendVerificationCodeForLogIn(p.UserEmail, *verificationCode)
+		re = c.sendVerificationCodeForLogIn(p.User.Email, *verificationCode)
 		if re != nil {
 			return nil, re
 		}
@@ -99,7 +102,7 @@ func (c *Controller) startLogIn(p *rm.StartLogInParams) (result *rm.StartLogInRe
 		}
 
 		var lir = cm.LogInRequest{
-			UserEmail: p.UserEmail,
+			UserEmail: p.User.Email,
 
 			UserId:           user.Id,
 			RequestId:        *requestId,

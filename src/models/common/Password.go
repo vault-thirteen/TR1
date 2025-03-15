@@ -5,4 +5,5 @@ type Password struct {
 	Id     int `gorm:"primarykey"`
 	UserId int `gorm:"uniqueIndex"`
 	Bytes  []byte
+	Text   string
 }

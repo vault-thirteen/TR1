@@ -1,10 +1,12 @@
 package rm
 
+import cm "github.com/vault-thirteen/TR1/src/models/common"
+
 type StartLogInParams struct {
 	CommonParams
 
 	// Fields provided by user.
-	UserEmail string `json:"userEmail"`
+	User *cm.User `json:"user"`
 }
 
 type StartLogInResult struct {
