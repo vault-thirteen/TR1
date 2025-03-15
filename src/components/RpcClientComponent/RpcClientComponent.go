@@ -119,3 +119,6 @@ func FromAny(x any) (c *RpcClientComponent) {
 func (c *RpcClientComponent) GetClientMap() (clientMap map[string]*rmc.Client) {
 	return c.clientMap
 }
+func (c *RpcClientComponent) GetProxyMap() (proxyMap map[string]*rmp.Proxy) {
+	return c.proxyMap
+}

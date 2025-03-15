@@ -2,6 +2,7 @@ package rmp
 
 import (
 	"net"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strconv"
@@ -37,4 +38,8 @@ func NewProxyFromSettings(settings *ccse.CommonConfigurationServiceEntry, shortN
 	}
 
 	return proxy, nil
+}
+
+func (p *Proxy) Use(rw http.ResponseWriter, req *http.Request) {
+	p.proxy.ServeHTTP(rw, req)
 }

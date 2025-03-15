@@ -74,6 +74,7 @@ func (c *Controller) initFAR() {
 
 	c.far.authServiceClient = c.far.rcc.GetClientMap()[rm.ServiceShortName_Auth]
 	c.far.messageServiceClient = c.far.rcc.GetClientMap()[rm.ServiceShortName_Message]
+	c.far.captchaServiceProxy = c.far.rcc.GetProxyMap()[rm.ServiceShortName_Captcha]
 
 	c.far.pageSize = c.far.systemSettings.GetParameterAsInt(ccp.PageSize)
 	c.far.messageEditTime = c.far.systemSettings.GetParameterAsInt(ccp.MessageEditTime)

@@ -39,7 +39,7 @@
           {
             "name": "imagesFolder",
             "type": "string",
-            "value": "H:\\Temp\\TR1\\rcs_img"
+            "value": "captcha"
           },
           {
             "name": "imageWidth",

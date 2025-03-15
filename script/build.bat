@@ -47,6 +47,8 @@ XCOPY config %BUILD_DIR%\config /S/I/Q
 XCOPY script\start_service_*.bat %BUILD_DIR%\ /Q
 XCOPY script\start_tool_*.bat %BUILD_DIR%\ /Q
 
+MKDIR %BUILD_DIR%\captcha
+
 EXIT /B 0
 
 ::============================================================================::

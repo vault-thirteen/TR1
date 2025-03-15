@@ -135,6 +135,32 @@
         ]
       },
       {
+        "type": "captcha",
+        "protocol": "http",
+        "parameters": [
+          {
+            "name": "schema",
+            "type": "string",
+            "value": "http"
+          },
+          {
+            "name": "host",
+            "type": "string",
+            "value": "localhost"
+          },
+          {
+            "name": "port",
+            "type": "integer",
+            "value": 2003
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "value": "/"
+          }
+        ]
+      },
+      {
         "type": "message",
         "protocol": "https",
         "parameters": [

@@ -20,7 +20,8 @@ const (
 
 // URL paths.
 const (
-	UrlPath_Api = `/api`
+	UrlPath_Api     = `/api`
+	UrlPath_Captcha = `/captcha`
 )
 
 const (
@@ -170,6 +171,10 @@ func (c *Controller) gatewayRouter(rw http.ResponseWriter, req *http.Request) {
 	case UrlPath_Api:
 		c.handleApiRequest(rw, req, clientIPA)
 		return
+
+	case UrlPath_Captcha:
+		c.handleCaptchaRequest(rw, req)
+		return
 	}
 
 	//TODO: Add other handlers.
@@ -187,4 +192,15 @@ func (c *Controller) gatewayRouter(rw http.ResponseWriter, req *http.Request) {
 		c.logError(err)
 		return
 	}
+}
+
+func (c *Controller) handleCaptchaRequest(rw http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		c.respondMethodNotAllowed(rw)
+		return
+	}
+
+	c.far.captchaServiceProxy.Use(rw, req)
+
+	return
 }
