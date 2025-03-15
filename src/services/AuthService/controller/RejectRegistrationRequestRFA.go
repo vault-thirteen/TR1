@@ -43,7 +43,10 @@ func (c *Controller) rejectRegistrationRequestRFA(p *rm.RejectRegistrationReques
 
 	// Check parameters.
 	{
-		if len(p.UserEmail) == 0 {
+		if p.User == nil {
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_UserIsNotSet, rme.Msg_UserIsNotSet, nil)
+		}
+		if len(p.User.Email) == 0 {
 			return nil, jrm1.NewRpcErrorByUser(rme.Code_EmailIsNotSet, rme.Msg_EmailIsNotSet, nil)
 		}
 	}
@@ -51,7 +54,7 @@ func (c *Controller) rejectRegistrationRequestRFA(p *rm.RejectRegistrationReques
 	dbC := dbc.NewDbController(c.GetDb())
 
 	rr := new(cm.RegistrationRequest)
-	err := dbC.GetRegistrationRequestRFA(p.UserEmail, rr)
+	err := dbC.GetRegistrationRequestRFA(p.User.Email, rr)
 	if err != nil {
 		return nil, c.databaseError(err)
 	}
