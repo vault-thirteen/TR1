@@ -526,6 +526,15 @@ func (dbc *DbController) SetUserRole(user *cm.User, roleName string, newValue bo
 
 	return nil
 }
+func (dbc *DbController) SetUserBanTime(user *cm.User) (err error) {
+	var tx *gorm.DB
+	tx = dbc.db.Model(user).Where("id = ?", user.Id).Update("ban_time", user.BanTime)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
 
 // Forum.
 

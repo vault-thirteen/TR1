@@ -101,7 +101,7 @@ func (c *Controller) startEmailChange(p *rm.StartEmailChangeParams) (result *rm.
 			return nil, re
 		}
 
-		re = c.sendVerificationCodeForLogIn(userWithSession.Email, *verificationCodeA)
+		re = c.sendVerificationCode_EmailChange(userWithSession.Email, *verificationCodeA)
 		if re != nil {
 			return nil, re
 		}
@@ -113,7 +113,7 @@ func (c *Controller) startEmailChange(p *rm.StartEmailChangeParams) (result *rm.
 			return nil, re
 		}
 
-		re = c.sendVerificationCodeForLogIn(p.NewEmail, *verificationCodeB)
+		re = c.sendVerificationCode_EmailChange(p.NewEmail, *verificationCodeB)
 		if re != nil {
 			return nil, re
 		}

@@ -50,7 +50,7 @@
           {
             "name": "host",
             "type": "string",
-            "value": "192.168.88.249"
+            "value": "localhost"
           },
           {
             "name": "port",

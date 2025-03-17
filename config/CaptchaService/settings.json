@@ -54,32 +54,32 @@
           {
             "name": "filesCountToClean",
             "type": "integer",
-            "value": 10
+            "value": 32
           },
           {
             "name": "fileCacheSizeLimit",
             "type": "integer",
-            "value": 100
+            "value": 128
           },
           {
             "name": "fileCacheVolumeLimit",
             "type": "integer",
-            "value": 2000000
+            "value": 4000000
           },
           {
             "name": "fileCacheItemTtl",
             "type": "integer",
-            "value": 180
+            "value": 300
           },
           {
             "name": "recordCacheSizeLimit",
             "type": "integer",
-            "value": 100
+            "value": 128
           },
           {
             "name": "recordCacheItemTtl",
             "type": "integer",
-            "value": 180
+            "value": 300
           }
         ]
       }

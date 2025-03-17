@@ -29,7 +29,7 @@
           {
             "name": "user",
             "type": "string",
-            "value": "test-238756@yandex.ru"
+            "value": "test@yandex.com"
           },
           {
             "name": "password",

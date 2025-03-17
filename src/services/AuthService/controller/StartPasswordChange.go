@@ -101,7 +101,7 @@ func (c *Controller) startPasswordChange(p *rm.StartPasswordChangeParams) (resul
 			return nil, re
 		}
 
-		re = c.sendVerificationCodeForLogIn(userWithSession.Email, *verificationCode)
+		re = c.sendVerificationCode_PwdChange(userWithSession.Email, *verificationCode)
 		if re != nil {
 			return nil, re
 		}

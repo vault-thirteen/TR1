@@ -92,6 +92,11 @@ func (c *Controller) confirmRegistration(p *rm.ConfirmRegistrationParams) (resul
 
 		// If approval is required, do nothing.
 		if c.far.systemSettings.GetParameterAsBool(ccp.IsAdminApprovalRequired) {
+			re = c.sendMessage_RegRFA(rr.UserEmail)
+			if re != nil {
+				return nil, re
+			}
+
 			result = &rm.ConfirmRegistrationResult{
 				Success:            rm.Success{OK: true},
 				IsApprovalRequired: true,
@@ -102,6 +107,11 @@ func (c *Controller) confirmRegistration(p *rm.ConfirmRegistrationParams) (resul
 
 		// Register user.
 		re = c.registerUser(rr)
+		if re != nil {
+			return nil, re
+		}
+
+		re = c.sendMessage_RegApproved(rr.UserEmail)
 		if re != nil {
 			return nil, re
 		}

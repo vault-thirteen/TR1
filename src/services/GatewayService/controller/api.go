@@ -230,6 +230,9 @@ func (c *Controller) ConfirmEmailChange(ar *rm.Request, _ *http.Request, rw http
 		return
 	}
 
+	// Clear HTTP cookies.
+	c.clearTokenCookie(rw)
+
 	result.CommonResult.Clear()
 	var response = &rm.Response{
 		Action: ar.Action,
@@ -261,6 +264,12 @@ func (c *Controller) ConfirmLogIn(ar *rm.Request, _ *http.Request, rw http.Respo
 	if re != nil {
 		c.processRpcError(re, rw)
 		return
+	}
+
+	// Set HTTP cookies.
+	if result.IsTokenSet {
+		c.setTokenCookie(rw, result.Token)
+		result.Token = ""
 	}
 
 	result.CommonResult.Clear()
@@ -296,6 +305,9 @@ func (c *Controller) ConfirmLogOut(ar *rm.Request, _ *http.Request, rw http.Resp
 		return
 	}
 
+	// Clear HTTP cookies.
+	c.clearTokenCookie(rw)
+
 	result.CommonResult.Clear()
 	var response = &rm.Response{
 		Action: ar.Action,
@@ -328,6 +340,9 @@ func (c *Controller) ConfirmPasswordChange(ar *rm.Request, _ *http.Request, rw h
 		c.processRpcError(re, rw)
 		return
 	}
+
+	// Clear HTTP cookies.
+	c.clearTokenCookie(rw)
 
 	result.CommonResult.Clear()
 	var response = &rm.Response{
@@ -1048,7 +1063,7 @@ func (c *Controller) AddForum(ar *rm.Request, _ *http.Request, rw http.ResponseW
 
 	var result = new(rm.AddForumResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_AddForum, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_AddForum, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1081,7 +1096,7 @@ func (c *Controller) AddMessage(ar *rm.Request, _ *http.Request, rw http.Respons
 
 	var result = new(rm.AddMessageResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_AddMessage, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_AddMessage, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1114,7 +1129,7 @@ func (c *Controller) AddThread(ar *rm.Request, _ *http.Request, rw http.Response
 
 	var result = new(rm.AddThreadResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_AddThread, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_AddThread, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1147,7 +1162,7 @@ func (c *Controller) ChangeForumName(ar *rm.Request, _ *http.Request, rw http.Re
 
 	var result = new(rm.ChangeForumNameResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ChangeForumName, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ChangeForumName, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1180,7 +1195,7 @@ func (c *Controller) ChangeMessageText(ar *rm.Request, _ *http.Request, rw http.
 
 	var result = new(rm.ChangeMessageTextResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ChangeMessageText, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ChangeMessageText, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1213,7 +1228,7 @@ func (c *Controller) ChangeMessageThread(ar *rm.Request, _ *http.Request, rw htt
 
 	var result = new(rm.ChangeMessageThreadResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ChangeMessageThread, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ChangeMessageThread, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1246,7 +1261,7 @@ func (c *Controller) ChangeThreadForum(ar *rm.Request, _ *http.Request, rw http.
 
 	var result = new(rm.ChangeThreadForumResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ChangeThreadForum, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ChangeThreadForum, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1279,7 +1294,7 @@ func (c *Controller) ChangeThreadName(ar *rm.Request, _ *http.Request, rw http.R
 
 	var result = new(rm.ChangeThreadNameResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ChangeThreadName, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ChangeThreadName, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1312,7 +1327,7 @@ func (c *Controller) DeleteForum(ar *rm.Request, _ *http.Request, rw http.Respon
 
 	var result = new(rm.DeleteForumResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_DeleteForum, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_DeleteForum, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1345,7 +1360,7 @@ func (c *Controller) DeleteMessage(ar *rm.Request, _ *http.Request, rw http.Resp
 
 	var result = new(rm.DeleteMessageResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_DeleteMessage, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_DeleteMessage, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1378,7 +1393,7 @@ func (c *Controller) DeleteThread(ar *rm.Request, _ *http.Request, rw http.Respo
 
 	var result = new(rm.DeleteThreadResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_DeleteThread, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_DeleteThread, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1411,7 +1426,7 @@ func (c *Controller) GetForum(ar *rm.Request, _ *http.Request, rw http.ResponseW
 
 	var result = new(rm.GetForumResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_GetForum, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_GetForum, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1444,7 +1459,7 @@ func (c *Controller) GetMessage(ar *rm.Request, _ *http.Request, rw http.Respons
 
 	var result = new(rm.GetMessageResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_GetMessage, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_GetMessage, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1477,7 +1492,7 @@ func (c *Controller) GetThread(ar *rm.Request, _ *http.Request, rw http.Response
 
 	var result = new(rm.GetThreadResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_GetThread, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_GetThread, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1510,7 +1525,7 @@ func (c *Controller) ListForums(ar *rm.Request, _ *http.Request, rw http.Respons
 
 	var result = new(rm.ListForumsResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ListForums, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ListForums, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1543,7 +1558,7 @@ func (c *Controller) ListMessages(ar *rm.Request, _ *http.Request, rw http.Respo
 
 	var result = new(rm.ListMessagesResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ListMessages, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ListMessages, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1576,7 +1591,7 @@ func (c *Controller) ListThreads(ar *rm.Request, _ *http.Request, rw http.Respon
 
 	var result = new(rm.ListThreadsResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_ListThreads, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_ListThreads, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1609,7 +1624,7 @@ func (c *Controller) MoveForumDown(ar *rm.Request, _ *http.Request, rw http.Resp
 
 	var result = new(rm.MoveForumDownResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_MoveForumDown, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_MoveForumDown, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return
@@ -1642,7 +1657,7 @@ func (c *Controller) MoveForumUp(ar *rm.Request, _ *http.Request, rw http.Respon
 
 	var result = new(rm.MoveForumUpResult)
 	var re *jrm1.RpcError
-	re, err = c.far.authServiceClient.MakeRequest(context.Background(), rm.Func_MoveForumUp, params, result)
+	re, err = c.far.messageServiceClient.MakeRequest(context.Background(), rm.Func_MoveForumUp, params, result)
 	if err != nil {
 		c.processInternalServerError(rw, err)
 		return

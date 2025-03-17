@@ -89,7 +89,7 @@ func (c *Controller) startLogIn(p *rm.StartLogInParams) (result *rm.StartLogInRe
 			return nil, re
 		}
 
-		re = c.sendVerificationCodeForLogIn(p.User.Email, *verificationCode)
+		re = c.sendVerificationCode_LogIn(p.User.Email, *verificationCode)
 		if re != nil {
 			return nil, re
 		}

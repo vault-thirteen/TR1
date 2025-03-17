@@ -2,6 +2,7 @@ package c
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/vault-thirteen/JSON-RPC-M1"
 	"github.com/vault-thirteen/TR1/src/models/common"
@@ -53,8 +54,13 @@ func (c *Controller) banUser(p *rm.BanUserParams) (result *rm.BanUserResult, re 
 
 	dbC := dbc.NewDbController(c.GetDb())
 
-	user := &cm.User{Id: p.User.Id}
+	now := time.Now()
+	user := &cm.User{Id: p.User.Id, BanTime: &now}
 	err := dbC.SetUserRole(user, dbc.UserRoleName_User, false)
+	if err != nil {
+		return nil, c.databaseError(err)
+	}
+	err = dbC.SetUserBanTime(user)
 	if err != nil {
 		return nil, c.databaseError(err)
 	}

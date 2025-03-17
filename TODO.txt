@@ -1,1 +1,0 @@
-1. Change temporary settings to normal default values.

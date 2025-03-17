@@ -138,7 +138,7 @@ func (c *Controller) startRegistration(p *rm.StartRegistrationParams) (result *r
 			return nil, re
 		}
 
-		re = c.sendVerificationCodeForReg(p.User.Email, *verificationCode)
+		re = c.sendVerificationCode_Reg(p.User.Email, *verificationCode)
 		if re != nil {
 			return nil, re
 		}

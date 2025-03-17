@@ -64,6 +64,11 @@ func (c *Controller) approveRegistrationRequestRFA(p *rm.ApproveRegistrationRequ
 		return nil, re
 	}
 
+	re = c.sendMessage_RegApproved(p.User.Email)
+	if re != nil {
+		return nil, re
+	}
+
 	result = &rm.ApproveRegistrationRequestRFAResult{
 		Success: rm.Success{OK: true},
 	}

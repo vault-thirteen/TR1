@@ -455,15 +455,39 @@ func (c *Controller) createVerificationCode() (vc *string, re *jrm1.RpcError) {
 
 	return s, nil
 }
-func (c *Controller) sendVerificationCodeForReg(email string, vCode string) (re *jrm1.RpcError) {
-	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplateForRegVCode), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
-	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplateForRegVCode), c.far.systemSettings.GetParameterAsString(ccp.SiteName), vCode)
+func (c *Controller) sendVerificationCode_Reg(email string, vCode string) (re *jrm1.RpcError) {
+	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplate_VC), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplate_Reg), vCode)
 	var params = rm.SendEmailMessageParams{Recipient: email, Subject: subject, Message: msg}
 	return c.sendEmailMessage(params)
 }
-func (c *Controller) sendVerificationCodeForLogIn(email string, vCode string) (re *jrm1.RpcError) {
-	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplateForRegVCode), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
-	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplateForLogIn), vCode)
+func (c *Controller) sendMessage_RegRFA(email string) (re *jrm1.RpcError) {
+	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplate_Reg), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplate_RegRFA), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var params = rm.SendEmailMessageParams{Recipient: email, Subject: subject, Message: msg}
+	return c.sendEmailMessage(params)
+}
+func (c *Controller) sendMessage_RegApproved(email string) (re *jrm1.RpcError) {
+	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplate_Reg), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplate_RegApproved), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var params = rm.SendEmailMessageParams{Recipient: email, Subject: subject, Message: msg}
+	return c.sendEmailMessage(params)
+}
+func (c *Controller) sendVerificationCode_LogIn(email string, vCode string) (re *jrm1.RpcError) {
+	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplate_VC), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplate_LogIn), vCode)
+	var params = rm.SendEmailMessageParams{Recipient: email, Subject: subject, Message: msg}
+	return c.sendEmailMessage(params)
+}
+func (c *Controller) sendVerificationCode_PwdChange(email string, vCode string) (re *jrm1.RpcError) {
+	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplate_VC), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplate_PwdChange), vCode)
+	var params = rm.SendEmailMessageParams{Recipient: email, Subject: subject, Message: msg}
+	return c.sendEmailMessage(params)
+}
+func (c *Controller) sendVerificationCode_EmailChange(email string, vCode string) (re *jrm1.RpcError) {
+	var subject = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.SubjectTemplate_VC), c.far.systemSettings.GetParameterAsString(ccp.SiteName))
+	var msg = fmt.Sprintf(c.far.messageSettings.GetParameterAsString(ccp.BodyTemplate_EmailChange), vCode)
 	var params = rm.SendEmailMessageParams{Recipient: email, Subject: subject, Message: msg}
 	return c.sendEmailMessage(params)
 }

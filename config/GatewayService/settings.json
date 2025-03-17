@@ -39,7 +39,7 @@
           {
             "name": "sessionMaxDuration",
             "type": "integer",
-            "value": 3600
+            "value": 86400
           }
         ]
       },
@@ -59,7 +59,7 @@
           {
             "name": "fileCacheSizeLimit",
             "type": "integer",
-            "value": 64
+            "value": 16
           },
           {
             "name": "fileCacheVolumeLimit",
