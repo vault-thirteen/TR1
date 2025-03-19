@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strconv"
 
 	jrm1 "github.com/vault-thirteen/JSON-RPC-M1"
 	hm "github.com/vault-thirteen/TR1/src/models/http"
@@ -15,14 +16,31 @@ import (
 
 // Static files.
 const (
-	StaticFile_IndexHtml = "index.html"
+	StaticFile_ApiJs      = "api.js"
+	StaticFile_Argon2Js   = "argon2.js"
+	StaticFile_Argon2Wasm = "argon2.wasm"
+	StaticFile_BppJs      = "bpp.js"
+	StaticFile_FaviconPng = "favicon.png"
+	StaticFile_IndexHtml  = "index.html"
+	StaticFile_LoaderJs   = "loader.js"
+	StaticFile_StylesCss  = "styles.css"
 )
 
 // URL paths.
 const (
+	UrlPath_Root     = `/`
 	UrlPath_Api      = `/api`
 	UrlPath_Captcha  = `/captcha`
 	UrlPath_Settings = `/settings`
+
+	UrlPath_ApiJs      = `/api.js`
+	UrlPath_Argon2Js   = `/argon2.js`
+	UrlPath_Argon2Wasm = `/argon2.wasm`
+	UrlPath_BppJs      = `/bpp.js`
+	UrlPath_FaviconPng = `/favicon.png`
+	UrlPath_IndexHtml  = `/index.html`
+	UrlPath_LoaderJs   = `/loader.js`
+	UrlPath_StylesCss  = `/styles.css`
 )
 
 // Errors.
@@ -178,15 +196,50 @@ func (c *Controller) gatewayRouter(rw http.ResponseWriter, req *http.Request) {
 		c.handleSettingsRequest(rw, req)
 		return
 
+	case UrlPath_Root,
+		UrlPath_IndexHtml:
+		c.handleStaticFile(rw, StaticFile_IndexHtml, hm.ContentType_HtmlPage)
+		return
+
+	case UrlPath_StylesCss:
+		c.handleStaticFile(rw, StaticFile_StylesCss, hm.ContentType_CssStyle)
+		return
+
+	case UrlPath_FaviconPng:
+		c.handleStaticFile(rw, StaticFile_FaviconPng, hm.ContentType_PNG)
+		return
+
+	// JavaScript scripts.
+
+	case UrlPath_ApiJs:
+		c.handleStaticFile(rw, StaticFile_ApiJs, hm.ContentType_JavaScript)
+		return
+
+	case UrlPath_Argon2Js:
+		c.handleStaticFile(rw, StaticFile_Argon2Js, hm.ContentType_JavaScript)
+		return
+
+	case UrlPath_BppJs:
+		c.handleStaticFile(rw, StaticFile_BppJs, hm.ContentType_JavaScript)
+		return
+
+	case UrlPath_LoaderJs:
+		c.handleStaticFile(rw, StaticFile_LoaderJs, hm.ContentType_JavaScript)
+		return
+
+	case UrlPath_Argon2Wasm:
+		c.handleStaticFile(rw, StaticFile_Argon2Wasm, hm.ContentType_Wasm)
+		return
+
+	// Captcha.
 	case UrlPath_Captcha:
 		c.handleCaptchaRequest(rw, req)
 		return
+
+	default:
+		c.handleStaticFile(rw, StaticFile_IndexHtml, hm.ContentType_HtmlPage)
+		return
 	}
-
-	//TODO: Add other handlers.
-
-	c.handleStaticFile(rw, StaticFile_IndexHtml, hm.ContentType_HtmlPage)
-	return
 }
 
 func (c *Controller) handleCaptchaRequest(rw http.ResponseWriter, req *http.Request) {
@@ -206,6 +259,7 @@ func (c *Controller) handleStaticFile(rw http.ResponseWriter, fileName string, c
 		return
 	}
 
+	rw.Header().Set(header.HttpHeaderCacheControl, "max-age="+strconv.Itoa(c.far.cacheControlMaxAge))
 	rw.Header().Set(header.HttpHeaderContentType, contentType)
 
 	_, err = rw.Write(fileContents)

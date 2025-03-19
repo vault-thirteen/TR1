@@ -50,6 +50,21 @@
             "name": "pageSize",
             "type": "integer",
             "value": 20
+          },
+          {
+            "name": "publicSettingsVersion",
+            "type": "string",
+            "value": "1"
+          },
+          {
+            "name": "publicSettingsTtl",
+            "type": "integer",
+            "value": 300
+          },
+          {
+            "name": "cacheControlMaxAge",
+            "type": "integer",
+            "value": 300
           }
         ]
       },

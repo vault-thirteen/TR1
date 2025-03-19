@@ -22,6 +22,7 @@ type ControllerFastAccessRegistry struct {
 	devModeHttpHeaderAccessControlAllowOrigin string
 	clientIPAddressSource_CustomHeader        string
 	sessionMaxDuration                        int
+	cacheControlMaxAge                        int
 
 	rcc        *rcc.RpcClientComponent
 	httpServer *hsc.HttpServerComponent

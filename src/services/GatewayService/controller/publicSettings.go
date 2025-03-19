@@ -13,6 +13,8 @@ import (
 
 func (c *Controller) initPublicSettings() (err error) {
 	ps := &cm.PublicSettings{
+		Version:            c.far.systemSettings.GetParameterAsString(ccp.PublicSettingsVersion),
+		TTL:                c.far.systemSettings.GetParameterAsInt(ccp.PublicSettingsTtl),
 		SiteName:           c.far.systemSettings.GetParameterAsString(ccp.SiteName),
 		SiteDomain:         c.far.systemSettings.GetParameterAsString(ccp.SiteDomain),
 		SessionMaxDuration: c.far.sessionMaxDuration,

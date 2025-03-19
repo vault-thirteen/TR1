@@ -89,6 +89,7 @@ func (c *Controller) initFAR() {
 	c.far.devModeHttpHeaderAccessControlAllowOrigin = c.far.systemSettings.GetParameterAsString(ccp.DeveloperMode_HttpHeader_AccessControlAllowOrigin)
 	c.far.clientIPAddressSource_CustomHeader = c.far.systemSettings.GetParameterAsString(ccp.ClientIPAddressSource_CustomHeader)
 	c.far.sessionMaxDuration = c.far.systemSettings.GetParameterAsInt(ccp.SessionMaxDuration)
+	c.far.cacheControlMaxAge = c.far.systemSettings.GetParameterAsInt(ccp.CacheControlMaxAge)
 }
 
 func (c *Controller) logError(err error) {
