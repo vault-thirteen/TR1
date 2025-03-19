@@ -20,10 +20,12 @@ const (
 
 // URL paths.
 const (
-	UrlPath_Api     = `/api`
-	UrlPath_Captcha = `/captcha`
+	UrlPath_Api      = `/api`
+	UrlPath_Captcha  = `/captcha`
+	UrlPath_Settings = `/settings`
 )
 
+// Errors.
 const (
 	ErrFUnknownRpcErrorCode = "unknown RPC error code: %v"
 )
@@ -172,6 +174,10 @@ func (c *Controller) gatewayRouter(rw http.ResponseWriter, req *http.Request) {
 		c.handleApiRequest(rw, req, clientIPA)
 		return
 
+	case UrlPath_Settings:
+		c.handleSettingsRequest(rw, req)
+		return
+
 	case UrlPath_Captcha:
 		c.handleCaptchaRequest(rw, req)
 		return
@@ -179,19 +185,8 @@ func (c *Controller) gatewayRouter(rw http.ResponseWriter, req *http.Request) {
 
 	//TODO: Add other handlers.
 
-	var file []byte
-	file, err = c.far.fileServer.GetFile(StaticFile_IndexHtml)
-	if err != nil {
-		c.logError(err)
-		return
-	}
-
-	//TODO:Add MIME Type.
-	_, err = rw.Write(file)
-	if err != nil {
-		c.logError(err)
-		return
-	}
+	c.handleStaticFile(rw, StaticFile_IndexHtml, hm.ContentType_HtmlPage)
+	return
 }
 
 func (c *Controller) handleCaptchaRequest(rw http.ResponseWriter, req *http.Request) {
@@ -203,4 +198,19 @@ func (c *Controller) handleCaptchaRequest(rw http.ResponseWriter, req *http.Requ
 	c.far.captchaServiceProxy.Use(rw, req)
 
 	return
+}
+func (c *Controller) handleStaticFile(rw http.ResponseWriter, fileName string, contentType string) {
+	fileContents, err := c.far.fileServer.GetFile(fileName)
+	if err != nil {
+		c.logError(err)
+		return
+	}
+
+	rw.Header().Set(header.HttpHeaderContentType, contentType)
+
+	_, err = rw.Write(fileContents)
+	if err != nil {
+		c.logError(err)
+		return
+	}
 }

@@ -27,9 +27,19 @@
             "value": ""
           },
           {
-            "name": "pageSize",
+            "name": "siteName",
+            "type": "string",
+            "value": "Test Site"
+          },
+          {
+            "name": "siteDomain",
+            "type": "string",
+            "value": "example.org"
+          },
+          {
+            "name": "sessionMaxDuration",
             "type": "integer",
-            "value": 20
+            "value": 86400
           },
           {
             "name": "messageEditTime",
@@ -37,9 +47,9 @@
             "value": 300
           },
           {
-            "name": "sessionMaxDuration",
+            "name": "pageSize",
             "type": "integer",
-            "value": 86400
+            "value": 20
           }
         ]
       },

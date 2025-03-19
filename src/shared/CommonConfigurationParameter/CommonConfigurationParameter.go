@@ -75,6 +75,7 @@ const (
 	Schema                                            = "schema"
 	SessionMaxDuration                                = "sessionMaxDuration"
 	SigningMethod                                     = "signingMethod"
+	SiteDomain                                        = "siteDomain"
 	SiteName                                          = "siteName"
 	SubjectTemplate_VC                                = "subjectTemplate_VC"
 	SubjectTemplate_Reg                               = "subjectTemplate_Reg"

@@ -31,6 +31,7 @@ type Controller struct {
 
 	apiHandlers                   map[string]rm.RequestHandler
 	httpStatusCodesByRpcErrorCode rm.HttpStatusCodeByRpcErrorCode
+	publicSettingsFile            []byte
 }
 
 func NewController() (c *Controller) {
@@ -58,6 +59,12 @@ func (c *Controller) LinkWithService(service interfaces.IService) (err error) {
 	c.service = service.(*cm.Service)
 	c.initFAR()
 	c.initAPI()
+
+	err = c.initPublicSettings()
+	if err != nil {
+		return err
+	}
+
 	c.initGatewayRouter()
 
 	return nil
