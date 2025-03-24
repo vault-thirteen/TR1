@@ -42,26 +42,27 @@ const (
 	Code_VerificationCodeIsNotSet               = 31
 	Code_BPP                                    = 32
 	Code_LogInRequestWithUserEmailExists        = 33
-	Code_AuthDataIsNotSet                       = 34
-	Code_PasswordIsWrong                        = 35
-	Code_JWT                                    = 36
-	Code_VerificationCodeIsWrong                = 37
-	Code_SessionIsNotFound                      = 38
-	Code_NotAuthorised                          = 39
-	Code_NotSure                                = 40
-	Code_TokenIsExpired                         = 41
-	Code_EmailChangeRequestWithNewEmailExists   = 42
-	Code_PasswordChangeRequestWithUserIdExists  = 43
-	Code_PageIsNotSet                           = 44
-	Code_UserIsNotSet                           = 45
-	Code_IdIsNotSet                             = 46
-	Code_AuthError                              = 47
-	Code_ForumIsNotSet                          = 48
-	Code_ThreadIsNotSet                         = 49
-	Code_MessageIsNotSet                        = 50
-	Code_TextIsNotSet                           = 51
-	Code_UserCanNotAddMessage                   = 52
-	Code_UserCanNotChangeMessageText            = 53
+	Code_SessionAlreadyExists                   = 34
+	Code_AuthDataIsNotSet                       = 35
+	Code_PasswordIsWrong                        = 36
+	Code_JWT                                    = 37
+	Code_VerificationCodeIsWrong                = 38
+	Code_SessionIsNotFound                      = 39
+	Code_NotAuthorised                          = 40
+	Code_NotSure                                = 41
+	Code_TokenIsExpired                         = 42
+	Code_EmailChangeRequestWithNewEmailExists   = 43
+	Code_PasswordChangeRequestWithUserIdExists  = 44
+	Code_PageIsNotSet                           = 45
+	Code_UserIsNotSet                           = 46
+	Code_IdIsNotSet                             = 47
+	Code_AuthError                              = 48
+	Code_ForumIsNotSet                          = 49
+	Code_ThreadIsNotSet                         = 50
+	Code_MessageIsNotSet                        = 51
+	Code_TextIsNotSet                           = 52
+	Code_UserCanNotAddMessage                   = 53
+	Code_UserCanNotChangeMessageText            = 54
 )
 
 // RPC error messages.
@@ -100,6 +101,7 @@ const (
 	Msg_VerificationCodeIsNotSet               = "verification code is not set"
 	MsgF_BPP                                   = "BPP error: %s"
 	Msg_LogInRequestWithUserEmailExists        = "log-in request with user e-mail exists"
+	Msg_SessionAlreadyExists                   = "session already exists"
 	Msg_AuthDataIsNotSet                       = "auth data is not set"
 	Msg_PasswordIsWrong                        = "password is wrong"
 	MsgF_JWT                                   = "JWT error: %s"
@@ -157,6 +159,7 @@ func GetMapOfHttpStatusCodesByRpcErrorCodes() map[int]int {
 		Code_VerificationCodeIsNotSet:               http.StatusBadRequest,
 		Code_BPP:                                    http.StatusInternalServerError,
 		Code_LogInRequestWithUserEmailExists:        http.StatusConflict,
+		Code_SessionAlreadyExists:                   http.StatusConflict,
 		Code_AuthDataIsNotSet:                       http.StatusBadRequest,
 		Code_PasswordIsWrong:                        http.StatusForbidden,
 		Code_JWT:                                    http.StatusInternalServerError,

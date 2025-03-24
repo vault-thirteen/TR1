@@ -202,6 +202,17 @@ func (dbc *DbController) GetUserByEmailAbleToLogIn(user *cm.User) (err error) {
 	}
 	return nil
 }
+func (dbc *DbController) ExistsSessionWithUserId(user *cm.User) (exists bool, err error) {
+	var n int64
+	tx := dbc.db.Model(&cm.Session{}).Where("user_id = ?", user.Id).Count(&n)
+	if tx.Error != nil {
+		return false, tx.Error
+	}
+	if n > 0 {
+		return true, nil
+	}
+	return false, nil
+}
 func (dbc *DbController) CreateLogInRequest(lir cm.LogInRequest) (err error) {
 	tx := dbc.db.Create(&lir)
 	if tx.Error != nil {

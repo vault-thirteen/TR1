@@ -2,7 +2,13 @@
 rootPath = "/";
 apiPath = "/api";
 settingsPath = "/settings";
+captchaPath = "/captcha"
 redirectDelay = 3;
+urlParameter_Id = "id";
+
+// HTTP Status Codes.
+
+httpStatusCode_NotAuthorised = 401;
 
 // Messages.
 Msg = {
@@ -22,6 +28,12 @@ Err = {
 
 // Action names.
 ActionName = {
+    // AuthService.
+    ConfirmLogIn: "confirmLogIn",
+    GetSelfRoles: "getSelfRoles",
+    StartLogIn: "startLogIn",
+
+    // MessageService.
     AddForum: "addForum",
     ListForums: "listForums",
 }
@@ -45,6 +57,8 @@ class ApiResponse {
 
 // Basic API methods.
 
+let lastHttpStatusCode = 0;
+
 async function sendApiRequest(data) {
     let url = apiPath;
     let ri = {
@@ -53,6 +67,8 @@ async function sendApiRequest(data) {
     };
     let resp = await fetch(url, ri);
     let result;
+    lastHttpStatusCode = resp.status;
+
     if (resp.status === 200) {
         result = new ApiResponse(true, await resp.json(), resp.status, null);
         return result;
@@ -102,6 +118,10 @@ function composeErrorText(errMsg) {
     return Msg.GenericErrorPrefix + errMsg.trim() + ".";
 }
 
+function makeUrl_CaptchaImage(id) {
+    return captchaPath + '?' + urlParameter_Id + '=' + id;
+}
+
 
 // Models.
 
@@ -120,7 +140,56 @@ class Forum {
     }
 }
 
+class User {
+    constructor(id, name, email, password, session, roles, regTime, banTime) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.session = session;
+        this.roles = roles;
+        this.regTime = regTime;
+        this.banTime = banTime;
+    }
+}
+
 // Request parameters & RPC functions.
+
+// AuthService.
+
+class Parameters_ConfirmLogIn {
+    constructor(requestId, captchaAnswer, verificationCode, authData) {
+        this.requestId = requestId;
+        this.captchaAnswer = captchaAnswer;
+        this.verificationCode = verificationCode;
+        this.authData = authData;
+    }
+}
+
+async function confirmLogIn(requestId, captchaAnswer, verificationCode, authData) {
+    let params = new Parameters_ConfirmLogIn(requestId, captchaAnswer, verificationCode, authData);
+    let reqData = new ApiRequest(ActionName.ConfirmLogIn, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+async function getSelfRoles() {
+    let reqData = new ApiRequest(ActionName.GetSelfRoles, {});
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+class Parameters_StartLogIn {
+    constructor(email) {
+        this.user = new User(0, "", email);
+    }
+}
+
+async function startLogIn(email) {
+    let params = new Parameters_StartLogIn(email);
+    let reqData = new ApiRequest(ActionName.StartLogIn, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+// MessageService.
 
 class Parameters_AddForum {
     constructor(name) {

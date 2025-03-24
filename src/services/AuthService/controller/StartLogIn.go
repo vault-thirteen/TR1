@@ -69,6 +69,18 @@ func (c *Controller) startLogIn(p *rm.StartLogInParams) (result *rm.StartLogInRe
 		}
 	}
 
+	// Check for existing session.
+	{
+		var exists bool
+		exists, err = dbC.ExistsSessionWithUserId(user)
+		if err != nil {
+			return nil, c.databaseError(err)
+		}
+		if exists {
+			return nil, jrm1.NewRpcErrorByUser(rme.Code_SessionAlreadyExists, rme.Msg_SessionAlreadyExists, p.User.Email)
+		}
+	}
+
 	// Start logging in.
 	{
 		var requestId *string
