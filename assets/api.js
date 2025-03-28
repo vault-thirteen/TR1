@@ -3,8 +3,15 @@ rootPath = "/";
 apiPath = "/api";
 settingsPath = "/settings";
 captchaPath = "/captcha"
-redirectDelay = 3;
+redirectDelay = 5;
 urlParameter_Id = "id";
+urlParameter_Action = "a";
+
+// Action pages.
+ActionPage = {
+    LogIn: "log-in",
+    Register: "register",
+}
 
 // HTTP Status Codes.
 
@@ -24,14 +31,28 @@ Err = {
     Server: "server error",
     Settings: "settings error",
     Unknown: "unknown error",
+    BooleanToString: "booleanToString: ",
+    UnknownActionPage: "Unknown action page: ",
+    UnknownElementType: "Unknown element type: ",
+    UnknownPageContentType: "Unknown page content type: ",
+    EmailAddressIsNotValid: "E-Mail address is not valid",
+    CaptchaAnswerIsNotSet: "Captcha answer is not set",
+    VerificationCodeIsNotSet: "Verification code is not set",
+    PasswordIsNotSet: "Password is not set",
+    PasswordIsNotAllowed: "Password is not allowed",
+    RequestIdIsNotSet: "Request ID is not set",
+    PasswordIsDifferent: "Password is different",
+    NameIsNotSet: "Name is not set",
 }
 
 // Action names.
 ActionName = {
     // AuthService.
     ConfirmLogIn: "confirmLogIn",
+    ConfirmRegistration: "confirmRegistration",
     GetSelfRoles: "getSelfRoles",
     StartLogIn: "startLogIn",
+    StartRegistration: "startRegistration",
 
     // MessageService.
     AddForum: "addForum",
@@ -122,6 +143,9 @@ function makeUrl_CaptchaImage(id) {
     return captchaPath + '?' + urlParameter_Id + '=' + id;
 }
 
+function makeUrl_ActionPage(action) {
+    return rootPath + '?' + urlParameter_Action + '=' + action;
+}
 
 // Models.
 
@@ -145,11 +169,17 @@ class User {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.password = new Password(password);
         this.session = session;
         this.roles = roles;
         this.regTime = regTime;
         this.banTime = banTime;
+    }
+}
+
+class Password {
+    constructor(text) {
+        this.text = text;
     }
 }
 
@@ -172,6 +202,20 @@ async function confirmLogIn(requestId, captchaAnswer, verificationCode, authData
     return await sendApiRequestAndGetResult(reqData);
 }
 
+class Parameters_ConfirmRegistration {
+    constructor(requestId, captchaAnswer, verificationCode) {
+        this.requestId = requestId;
+        this.captchaAnswer = captchaAnswer;
+        this.verificationCode = verificationCode;
+    }
+}
+
+async function confirmRegistration(requestId, captchaAnswer, verificationCode) {
+    let params = new Parameters_ConfirmRegistration(requestId, captchaAnswer, verificationCode);
+    let reqData = new ApiRequest(ActionName.ConfirmRegistration, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
 async function getSelfRoles() {
     let reqData = new ApiRequest(ActionName.GetSelfRoles, {});
     return await sendApiRequestAndGetResult(reqData);
@@ -186,6 +230,18 @@ class Parameters_StartLogIn {
 async function startLogIn(email) {
     let params = new Parameters_StartLogIn(email);
     let reqData = new ApiRequest(ActionName.StartLogIn, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+class Parameters_StartRegistration {
+    constructor(name, email, password) {
+        this.user = new User(0, name, email, password);
+    }
+}
+
+async function startRegistration(name, email, password) {
+    let params = new Parameters_StartRegistration(name, email, password);
+    let reqData = new ApiRequest(ActionName.StartRegistration, params);
     return await sendApiRequestAndGetResult(reqData);
 }
 

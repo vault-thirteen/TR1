@@ -25,3 +25,11 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
+.pageHeader {
+    color: grey;
+}
+
+.pageFooter {
+    color: grey;
+}

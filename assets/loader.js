@@ -32,9 +32,11 @@ id_td_pageFooter = "pageFooter";
 
 // IDs of various sections.
 id_table_logIn = "logIn";
+id_table_register = "register";
 
 // Page content types.
 pageContent_logIn = "logIn"
+pageContent_register = "reg"
 
 // Common basic functions.
 
@@ -57,7 +59,7 @@ function booleanToString(b) {
     if (b === false) {
         return "No";
     }
-    console.error("booleanToString:", b);
+    console.error(Err.BooleanToString, b);
     return null;
 }
 
@@ -259,21 +261,39 @@ async function onPageLoad() {
     }
     let settings = getSettings();
 
-    let curPage = window.location.search;
-
     drawPageHeader(settings);
     drawPageFooter(settings);
+
+    let urlParams = new URLSearchParams(document.location.search);
+    let ap = urlParams.get(urlParameter_Action);
+
+    switch (ap) {
+        case ActionPage.LogIn:
+            drawPageContent(settings, pageContent_logIn);
+            return;
+
+        case ActionPage.Register:
+            drawPageContent(settings, pageContent_register);
+            return;
+    }
 
     //TODO
     let selfRoles = await getSelfRoles();
     if (selfRoles == null) {
         if (lastHttpStatusCode === httpStatusCode_NotAuthorised) {
-            drawPageContent(settings, pageContent_logIn);
+            await redirectPage(true, makeUrl_ActionPage(ActionPage.LogIn));
             return;
         }
+        console.log("lastHttpStatusCode=" + lastHttpStatusCode);
+        return;
     }
-
     console.log(selfRoles);
+
+    switch (ap) {
+        default:
+            console.error(Err.UnknownActionPage, ap);
+            return
+    }
 }
 
 // UI functions.
@@ -289,7 +309,7 @@ function showElement(el) {
             return;
 
         default:
-            console.error("Unknown element type: " + el.tagName);
+            console.error(Err.UnknownElementType, el.tagName);
             return;
     }
 }
@@ -348,8 +368,12 @@ function drawPageContent(settings, contentType) {
             drawPageContent_LogIn(settings, pc);
             return;
 
+        case pageContent_register:
+            drawPageContent_Register(settings, pc);
+            return;
+
         default:
-            console.error("Unknown page content type: " + contentType);
+            console.error(Err.UnknownPageContentType, contentType);
             return;
     }
 }
@@ -357,6 +381,13 @@ function drawPageContent(settings, contentType) {
 function drawPageContent_LogIn(settings, pc) {
     pc.innerHTML = `
 <table id="logIn">
+    <tr>
+        <td colspan="2">
+            In order to use this website, you must be logged into the system. <br>
+            If you have no account, <a href="/?a=register">click here</a> to register one. <br>
+            If you have an account, log in using the form below. <br>
+        </td>
+    </tr>
     <tr>
         <td>E-Mail</td>
         <td>
@@ -412,7 +443,82 @@ function drawPageContent_LogIn(settings, pc) {
 </table>`;
     let tbl = document.getElementById(id_table_logIn);
     for (let i = 0; i < tbl.rows.length; i++) {
-        if (i > 1) {
+        if (i > 2) {
+            hideElement(tbl.rows[i]);
+        }
+    }
+}
+
+function drawPageContent_Register(settings, pc) {
+    pc.innerHTML = `
+<table id="register">
+    <tr>
+        <td colspan="2">
+            Fill the form below to register a new account.
+        </td>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>
+            <input type="text" name="user_name"/>
+        </td>
+    </tr>
+    <tr>
+        <td>E-Mail</td>
+        <td>
+            <input type="text" name="user_email"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Password</td>
+        <td>
+            <input type="password" name="user_pwd_1"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Password (again)</td>
+        <td>
+            <input type="password" name="user_pwd_2"/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="button" name="register_proceed_1" value=" Proceed " onClick="on_register_proceed_1_click(this)"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Captcha Question</td>
+        <td>
+            <img alt="captcha_question" src=""/>
+        </td>
+    </tr>
+    <tr>
+        <td>Captcha Answer</td>
+        <td>
+            <input type="text" name="captcha_answer"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Verification Code</td>
+        <td>
+            <input type="text" name="verification_code"/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="button" name="register_proceed_2" value=" Proceed " onClick="on_register_proceed_2_click(this)"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Request ID</td>
+        <td>
+            <input type="text" name="request_id"/>
+        </td>
+    </tr>
+</table>`;
+    let tbl = document.getElementById(id_table_register);
+    for (let i = 0; i < tbl.rows.length; i++) {
+        if (i > 5) {
             hideElement(tbl.rows[i]);
         }
     }
@@ -422,11 +528,10 @@ function drawPageContent_LogIn(settings, pc) {
 
 async function on_log_in_proceed_1_click(e) {
     let tbl = e.parentNode.parentNode.parentNode;
-    let email = tbl.rows[0].children[1].children[0].value;
-    console.log(email);
+    let email = tbl.rows[1].children[1].children[0].value;
     let ok = validateEmailAddress(email);
     if (!ok) {
-        console.error("E-Mail address is not valid");
+        console.error(Err.EmailAddressIsNotValid);
         return;
     }
 
@@ -436,54 +541,58 @@ async function on_log_in_proceed_1_click(e) {
     }
 
     // E-Mail address now can not be changed.
-    disableElement(tbl.rows[0].children[1].children[0]);
+    disableElement(tbl.rows[1].children[1].children[0]);
 
-    tbl.rows[7].children[1].children[0].value = res.requestId;
-    tbl.rows[8].children[1].children[0].value = res.authData;
+    tbl.rows[8].children[1].children[0].value = res.requestId;
+    tbl.rows[9].children[1].children[0].value = res.authData;
     let captchaId = res.captchaId;
 
     for (let i = 0; i < tbl.rows.length; i++) {
-        if (i > 1) {
+        if (i > 2) {
             showElement(tbl.rows[i]);
         }
     }
-    hideElement(tbl.rows[1]);
-    hideElement(tbl.rows[7]);
-    disableElement(tbl.rows[7].children[1].children[0]);
+
+    // Hide the first button.
+    hideElement(tbl.rows[2]);
+
+    // Hide RequestId and AuthData.
     hideElement(tbl.rows[8]);
     disableElement(tbl.rows[8].children[1].children[0]);
+    hideElement(tbl.rows[9]);
+    disableElement(tbl.rows[9].children[1].children[0]);
 
     // Show captcha image.
-    let captchaImg = tbl.rows[2].children[1].children[0];
+    let captchaImg = tbl.rows[3].children[1].children[0];
     captchaImg.src = makeUrl_CaptchaImage(captchaId);
 }
 
 async function on_log_in_proceed_2_click(e) {
     let tbl = e.parentNode.parentNode.parentNode;
-    let captchaAnswer = tbl.rows[3].children[1].children[0].value;
-    let vCode = tbl.rows[4].children[1].children[0].value;
-    let pwd = tbl.rows[5].children[1].children[0].value;
-    let requestId = tbl.rows[7].children[1].children[0].value;
-    let saltBA = base64ToByteArray(tbl.rows[8].children[1].children[0].value);
+    let captchaAnswer = tbl.rows[4].children[1].children[0].value;
+    let vCode = tbl.rows[5].children[1].children[0].value;
+    let pwd = tbl.rows[6].children[1].children[0].value;
+    let requestId = tbl.rows[8].children[1].children[0].value;
+    let saltBA = base64ToByteArray(tbl.rows[9].children[1].children[0].value);
 
     if (captchaAnswer.length === 0) {
-        console.error("Captcha answer is not set");
+        console.error(Err.CaptchaAnswerIsNotSet);
         return;
     }
     if (vCode.length === 0) {
-        console.error("Verification code is not set");
+        console.error(Err.VerificationCodeIsNotSet);
         return;
     }
     if (pwd.length === 0) {
-        console.error("Password is not set");
+        console.error(Err.PasswordIsNotSet);
         return;
     }
     if (!isPasswordAllowed(pwd)) {
-        console.error("Password is not allowed");
+        console.error(Err.PasswordIsNotAllowed);
         return;
     }
     if (requestId.length === 0) {
-        console.error("Request ID is not set");
+        console.error(Err.RequestIdIsNotSet);
         return;
     }
 
@@ -495,5 +604,89 @@ async function on_log_in_proceed_2_click(e) {
         return;
     }
 
-    await redirectPage(true, "");
+    await redirectPage(true, rootPath);
+}
+
+async function on_register_proceed_1_click(e) {
+    let tbl = e.parentNode.parentNode.parentNode;
+    let name = tbl.rows[1].children[1].children[0].value;
+    let email = tbl.rows[2].children[1].children[0].value;
+    let password = tbl.rows[3].children[1].children[0].value;
+    let password2 = tbl.rows[4].children[1].children[0].value;
+    if (name.length === 0) {
+        console.error(Err.NameIsNotSet);
+        return;
+    }
+    let ok = validateEmailAddress(email);
+    if (!ok) {
+        console.error(Err.EmailAddressIsNotValid);
+        return;
+    }
+    if (password !== password2) {
+        console.error(Err.PasswordIsDifferent);
+        return;
+    }
+    if (!isPasswordAllowed(password)) {
+        console.error(Err.PasswordIsNotAllowed);
+        return;
+    }
+
+    let res = await startRegistration(name, email, password);
+    if (res == null) {
+        return;
+    }
+
+    // Name, E-Mail address and Password now can not be changed.
+    disableElement(tbl.rows[1].children[1].children[0]);
+    disableElement(tbl.rows[2].children[1].children[0]);
+    disableElement(tbl.rows[3].children[1].children[0]);
+    disableElement(tbl.rows[4].children[1].children[0]);
+
+    tbl.rows[10].children[1].children[0].value = res.requestId;
+    let captchaId = res.captchaId;
+
+    for (let i = 0; i < tbl.rows.length; i++) {
+        if (i > 5) {
+            showElement(tbl.rows[i]);
+        }
+    }
+
+    // Hide the first button.
+    hideElement(tbl.rows[5]);
+
+    // Hide RequestId.
+    hideElement(tbl.rows[10]);
+    disableElement(tbl.rows[10].children[1].children[0]);
+
+    // Show captcha image.
+    let captchaImg = tbl.rows[6].children[1].children[0];
+    captchaImg.src = makeUrl_CaptchaImage(captchaId);
+}
+
+async function on_register_proceed_2_click(e) {
+    let tbl = e.parentNode.parentNode.parentNode;
+    let captchaAnswer = tbl.rows[7].children[1].children[0].value;
+    let vCode = tbl.rows[8].children[1].children[0].value;
+    let requestId = tbl.rows[10].children[1].children[0].value;
+
+
+    if (captchaAnswer.length === 0) {
+        console.error(Err.CaptchaAnswerIsNotSet);
+        return;
+    }
+    if (vCode.length === 0) {
+        console.error(Err.VerificationCodeIsNotSet);
+        return;
+    }
+    if (requestId.length === 0) {
+        console.error(Err.RequestIdIsNotSet);
+        return;
+    }
+
+    let res = await confirmRegistration(requestId, captchaAnswer, vCode);
+    if (res == null) {
+        return;
+    }
+
+    await redirectPage(true, rootPath);
 }
