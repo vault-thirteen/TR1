@@ -14,7 +14,7 @@ require (
 	github.com/vault-thirteen/auxie v0.29.0
 	golang.org/x/term v0.36.0
 	gorm.io/driver/mysql v1.6.0
-	gorm.io/gorm v1.31.0
+	gorm.io/gorm v1.31.1
 )
 
 require (
