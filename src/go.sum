@@ -31,8 +31,8 @@ github.com/vault-thirteen/RingCaptcha v0.11.5 h1:WsjWUYMxfrD8kX57XcRcA4Dm7UIzVzX
 github.com/vault-thirteen/RingCaptcha v0.11.5/go.mod h1:+GLkS8HHeyhAt3Df2/ymHpzsy9ERs1N6an+3nNDpS7o=
 github.com/vault-thirteen/Simple-File-Server v0.16.5 h1:lnKNiFfPtnsH6YVMmO97PO3hi2eWyY6epa0rskRKCOY=
 github.com/vault-thirteen/Simple-File-Server v0.16.5/go.mod h1:u/ul+d7sdHosmV6nxUEGbPA61Ts4ISZ0ZmALfChrjj8=
-github.com/vault-thirteen/auxie v0.29.0 h1:2iDpuRD4o26bwoiBP+6GsBPfFSvPJLnPyFKyghR3Syw=
-github.com/vault-thirteen/auxie v0.29.0/go.mod h1:PqqgLkURByOdWLrM76FDVIaTRE/wwAcsEgkQXrSR0QA=
+github.com/vault-thirteen/auxie v0.29.1 h1:F6FBMebchIx+S6e1TCK0m9a4YU2kRW0iUo/rdnRx3NE=
+github.com/vault-thirteen/auxie v0.29.1/go.mod h1:yhrVNOrrnjFfah2oqQNGKmqbXjgkKLpZiZ0lKAWWjvE=
 golang.org/x/crypto v0.43.0 h1:dduJYIi3A3KOfdGOHX8AVZ/jGiyPa3IbBozJ5kNuE04=
 golang.org/x/crypto v0.43.0/go.mod h1:BFbav4mRNlXJL4wNeejLpWxB7wMbc79PdRGhWKncxR0=
 golang.org/x/image v0.32.0 h1:6lZQWq75h7L5IWNk0r+SCpUJ6tUVd3v4ZHnbRKLkUDQ=
