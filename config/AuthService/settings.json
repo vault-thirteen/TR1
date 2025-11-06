@@ -105,6 +105,11 @@
             "name": "pageSize",
             "type": "integer",
             "value": 20
+          },
+          {
+            "name": "initConsoleColours",
+            "type": "boolean",
+            "value": true
           }
         ]
       },

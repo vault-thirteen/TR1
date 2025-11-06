@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/vault-thirteen/TR1/src/components/CaptchaComponent"
+	"github.com/vault-thirteen/TR1/src/components/ConsoleComponent"
 	"github.com/vault-thirteen/TR1/src/components/ErrorListenerComponent"
 	"github.com/vault-thirteen/TR1/src/components/RpcServerComponent"
 	"github.com/vault-thirteen/TR1/src/interfaces"
@@ -14,6 +15,7 @@ func main() {
 	// Order of components must be synchronised with a list of component
 	// indices of the controller.
 	var serviceComponents = []interfaces.IServiceComponent{
+		&coc.ConsoleComponent{},
 		&elc.ErrorListenerComponent{},
 		&cc.CaptchaComponent{},
 		&rsc.RpcServerComponent{},

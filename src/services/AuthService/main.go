@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/vault-thirteen/TR1/src/components/ConsoleComponent"
 	"github.com/vault-thirteen/TR1/src/components/DatabaseComponent"
 	"github.com/vault-thirteen/TR1/src/components/ErrorListenerComponent"
 	"github.com/vault-thirteen/TR1/src/components/JwtManagerComponent"
@@ -19,6 +20,7 @@ func main() {
 	// Order of components must be synchronised with a list of component
 	// indices of the controller.
 	var serviceComponents = []interfaces.IServiceComponent{
+		&coc.ConsoleComponent{},
 		&elc.ErrorListenerComponent{},
 		&dc.DatabaseComponent{},
 		&jmc.JwtManagerComponent{},

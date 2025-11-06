@@ -12,6 +12,7 @@ require (
 	github.com/vault-thirteen/RingCaptcha v0.11.5
 	github.com/vault-thirteen/Simple-File-Server v0.16.5
 	github.com/vault-thirteen/auxie v0.29.1
+	golang.org/x/sys v0.37.0
 	golang.org/x/term v0.36.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.1
@@ -27,6 +28,5 @@ require (
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/image v0.32.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
 )

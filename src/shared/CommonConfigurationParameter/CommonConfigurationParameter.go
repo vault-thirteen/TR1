@@ -43,6 +43,7 @@ const (
 	ImageHeight                                       = "imageHeight"
 	ImageWidth                                        = "imageWidth"
 	ImagesFolder                                      = "imagesFolder"
+	InitConsoleColours                                = "initConsoleColours"
 	IsAdminApprovalRequired                           = "isAdminApprovalRequired"
 	IsCacheEnabled                                    = "isCacheEnabled"
 	IsDatabaseInitialisationUsed                      = "isDatabaseInitialisationUsed"

@@ -38,6 +38,7 @@ type Application struct {
 	ver                   *ver.Versioneer
 	cfg                   *Configuration
 	service               *Service
+	dl                    *DllLoader
 }
 
 func NewApplication(serviceShortName string, serviceComponents []interfaces.IServiceComponent, controller interfaces.IController) (a *Application, err error) {
@@ -72,6 +73,12 @@ func NewApplication(serviceShortName string, serviceComponents []interfaces.ISer
 		configurationFilePath: configurationFilePath,
 		ver:                   vi,
 		cfg:                   cfg,
+		dl:                    NewDllLoader(),
+	}
+
+	err = a.dl.Init()
+	if err != nil {
+		return nil, err
 	}
 
 	a.service, err = NewService(a.cfg, serviceComponents, controller)

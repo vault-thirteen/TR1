@@ -31,14 +31,15 @@ import (
 // List of component indices of the controller must be synchronised with the
 // order of components used in the application's constructor.
 const (
-	ComponentIndex_ErrorListenerComponent             = 0
-	ComponentIndex_DatabaseComponent                  = 1
-	ComponentIndex_JwtManagerComponent                = 2
-	ComponentIndex_RequestIdGeneratorComponent        = 3
-	ComponentIndex_RpcClientComponent                 = 4
-	ComponentIndex_VerificationCodeGeneratorComponent = 5
-	ComponentIndex_RpcServerComponent                 = 6
-	ComponentIndex_SchedulerComponent                 = 7
+	ComponentIndex_ConsoleComponent                   = 0
+	ComponentIndex_ErrorListenerComponent             = 1
+	ComponentIndex_DatabaseComponent                  = 2
+	ComponentIndex_JwtManagerComponent                = 3
+	ComponentIndex_RequestIdGeneratorComponent        = 4
+	ComponentIndex_RpcClientComponent                 = 5
+	ComponentIndex_VerificationCodeGeneratorComponent = 6
+	ComponentIndex_RpcServerComponent                 = 7
+	ComponentIndex_SchedulerComponent                 = 8
 )
 
 type Controller struct {

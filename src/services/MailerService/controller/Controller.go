@@ -16,9 +16,10 @@ import (
 // List of component indices of the controller must be synchronised with the
 // order of components used in the application's constructor.
 const (
-	ComponentIndex_ErrorListenerComponent = 0
-	ComponentIndex_MailerComponent        = 1
-	ComponentIndex_RpcServerComponent     = 2
+	ComponentIndex_ConsoleComponent       = 0
+	ComponentIndex_ErrorListenerComponent = 1
+	ComponentIndex_MailerComponent        = 2
+	ComponentIndex_RpcServerComponent     = 3
 )
 
 type Controller struct {

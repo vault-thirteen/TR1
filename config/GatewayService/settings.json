@@ -65,6 +65,11 @@
             "name": "cacheControlMaxAge",
             "type": "integer",
             "value": 300
+          },
+          {
+            "name": "initConsoleColours",
+            "type": "boolean",
+            "value": true
           }
         ]
       },

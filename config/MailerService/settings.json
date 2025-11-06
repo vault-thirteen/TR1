@@ -10,6 +10,11 @@
             "name": "isDebugMode",
             "type": "boolean",
             "value": true
+          },
+          {
+            "name": "initConsoleColours",
+            "type": "boolean",
+            "value": true
           }
         ]
       },
