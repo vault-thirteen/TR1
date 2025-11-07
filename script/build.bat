@@ -34,9 +34,6 @@ IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 
 MKDIR %BUILD_DIR%\tool
 
-CALL :BuildToolExecutable "Argon2"
-IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
-
 CALL :BuildToolExecutable "MakeJWToken"
 IF %ERRORLEVEL% NEQ 0 ( GOTO :BadExit )
 
