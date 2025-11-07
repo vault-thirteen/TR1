@@ -76,6 +76,8 @@ func NewApplication(serviceShortName string, serviceComponents []interfaces.ISer
 		dl:                    NewDllLoader(),
 	}
 
+	showIntro(a.ver, a.shortName)
+
 	err = a.dl.Init()
 	if err != nil {
 		return nil, err
@@ -115,8 +117,6 @@ func (a Application) GetConfiguration() interfaces.IConfiguration {
 }
 
 func (a *Application) Use() (err error) {
-	showIntro(a.ver, a.shortName)
-
 	// Start.
 	log.Println(Msg_ServiceIsStarting)
 
