@@ -1,30 +1,51 @@
 // Settings.
-rootPath = "/";
-apiPath = "/api";
-settingsPath = "/settings";
-captchaPath = "/captcha"
-redirectDelay = 5;
-urlParameter_Id = "id";
-urlParameter_Action = "a";
+
+// Paths.
+const path =
+    {
+        root: "/",
+        api: "/api",
+        settings: "/settings",
+        captcha: "/captcha",
+    };
+
+// Delays.
+const delay =
+    {
+        redirect: 5,
+    };
+
+// URL parameters.
+const url_parameter =
+    {
+        id: "id",
+        action: "a",
+    };
 
 // Action pages.
-ActionPage = {
+const ActionPage = {
     LogIn: "log-in",
     Register: "register",
-}
+};
 
 // HTTP Status Codes.
-
-httpStatusCode_NotAuthorised = 401;
+const httpStatusCode =
+    {
+        NotAuthorised: 401,
+    };
 
 // Messages.
-Msg = {
+const Msg = {
+    JavaScriptMustDie: "JavaScript must die. This pseudo language is a big mockery and ridicule of people. This is not a joke. This is truth.",
+    Dot: ".",
+    NewSettingsReceived: "New settings have been received. Version:",
     GenericErrorPrefix: "Error: ",
     Redirecting: "Redirecting. Please wait ...",
-}
+    LastHttpStatusCode: "lastHttpStatusCode=",
+};
 
 // Errors.
-Err = {
+const Err = {
     ActionMismatch: "action mismatch",
     Client: "client error",
     RpcError: "RPC error",
@@ -43,10 +64,10 @@ Err = {
     RequestIdIsNotSet: "Request ID is not set",
     PasswordIsDifferent: "Password is different",
     NameIsNotSet: "Name is not set",
-}
+};
 
 // Action names.
-ActionName = {
+const ActionName = {
     // AuthService.
     ConfirmLogIn: "confirmLogIn",
     ConfirmRegistration: "confirmRegistration",
@@ -57,7 +78,7 @@ ActionName = {
     // MessageService.
     AddForum: "addForum",
     ListForums: "listForums",
-}
+};
 
 class ApiRequest {
     constructor(action, parameters) {
@@ -75,13 +96,12 @@ class ApiResponse {
     }
 }
 
-
 // Basic API methods.
 
 let lastHttpStatusCode = 0;
 
 async function sendApiRequest(data) {
-    let url = apiPath;
+    let url = path.api;
     let ri = {
         method: "POST",
         body: JSON.stringify(data)
@@ -140,11 +160,11 @@ function composeErrorText(errMsg) {
 }
 
 function makeUrl_CaptchaImage(id) {
-    return captchaPath + '?' + urlParameter_Id + '=' + id;
+    return path.captcha + '?' + url_parameter.id + '=' + id;
 }
 
 function makeUrl_ActionPage(action) {
-    return rootPath + '?' + urlParameter_Action + '=' + action;
+    return path.root + '?' + url_parameter.action + '=' + action;
 }
 
 // Models.

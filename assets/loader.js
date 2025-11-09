@@ -7,13 +7,13 @@ window.onpageshow = function (event) {
         // but in reality it will end as soon as this evil programming language
         // dies. Please, do not support JavaScript and its developers in any
         // means possible. Please, let this evil "technology" to die.
-        console.info("JavaScript must die. This pseudo language is a big mockery and ridicule of people. This is not a joke. This is truth.");
+        console.info(Msg.JavaScriptMustDie);
         window.location.reload();
     }
 };
 
 // Names of JavaScript storage variables.
-Varname = {
+const Varname = {
     // Settings.
     Settings_LoadTime: "settings_LoadTime",
     Settings_Version: "settings_Version",
@@ -26,17 +26,26 @@ Varname = {
 }
 
 // Page sections.
-id_td_pageHeader = "pageHeader";
-id_td_pageContent = "pageContent";
-id_td_pageFooter = "pageFooter";
+const id_td =
+    {
+        pageHeader: "pageHeader",
+        pageContent: "pageContent",
+        pageFooter: "pageFooter",
+    };
 
 // IDs of various sections.
-id_table_logIn = "logIn";
-id_table_register = "register";
+const id_table =
+    {
+        logIn: "logIn",
+        register: "register",
+    };
 
 // Page content types.
-pageContent_logIn = "logIn"
-pageContent_register = "reg"
+const pageContent =
+    {
+        logIn: "logIn",
+        register: "reg",
+    };
 
 // Common basic functions.
 
@@ -44,7 +53,7 @@ function isNumber(x) {
     return typeof x === 'number';
 }
 
-function isNumeric(str) {
+function isNumericString(str) {
     if (typeof str != "string") {
         return false
     }
@@ -144,12 +153,11 @@ function validateEmailAddress(x) {
 
 async function redirectPage(wait, url) {
     if (wait) {
-        await sleep(redirectDelay * 1000);
+        await sleep(delay.redirect * 1000);
     }
 
     document.location.href = url;
 }
-
 
 // Settings.
 
@@ -196,7 +204,7 @@ function isSettingsUpdateNeeded() {
 async function updateSettings() {
     let resp = await fetchSettings();
     let s = jsonToSettings(resp);
-    console.info('New settings have been received. Version: ' + s.Version.toString() + ".");
+    console.info(Msg.NewSettingsReceived + s.Version.toString() + Msg.Dot);
 
     // Save the settings for future usage.
     saveSettings(s);
@@ -204,7 +212,7 @@ async function updateSettings() {
 }
 
 async function fetchSettings() {
-    let data = await fetch(settingsPath);
+    let data = await fetch(path.settings);
     return await data.json();
 }
 
@@ -251,7 +259,6 @@ function getSettings() {
     );
 }
 
-
 // Entry point.
 async function onPageLoad() {
     // Settings initialisation.
@@ -265,26 +272,26 @@ async function onPageLoad() {
     drawPageFooter(settings);
 
     let urlParams = new URLSearchParams(document.location.search);
-    let ap = urlParams.get(urlParameter_Action);
+    let ap = urlParams.get(url_parameter.action);
 
     switch (ap) {
         case ActionPage.LogIn:
-            drawPageContent(settings, pageContent_logIn);
+            drawPageContent(settings, pageContent.logIn);
             return;
 
         case ActionPage.Register:
-            drawPageContent(settings, pageContent_register);
+            drawPageContent(settings, pageContent.register);
             return;
     }
 
     //TODO
     let selfRoles = await getSelfRoles();
     if (selfRoles == null) {
-        if (lastHttpStatusCode === httpStatusCode_NotAuthorised) {
+        if (lastHttpStatusCode === httpStatusCode.NotAuthorised) {
             await redirectPage(true, makeUrl_ActionPage(ActionPage.LogIn));
             return;
         }
-        console.log("lastHttpStatusCode=" + lastHttpStatusCode);
+        console.log(Msg.LastHttpStatusCode + lastHttpStatusCode);
         return;
     }
     console.log(selfRoles);
@@ -351,24 +358,24 @@ function newInput() {
 }
 
 function drawPageHeader(settings) {
-    let ph = document.getElementById(id_td_pageHeader);
+    let ph = document.getElementById(id_td.pageHeader);
     ph.textContent = settings.SiteName + " " + "header";
 }
 
 function drawPageFooter(settings) {
-    let pf = document.getElementById(id_td_pageFooter);
+    let pf = document.getElementById(id_td.pageFooter);
     pf.textContent = settings.SiteName + " " + "footer";
 }
 
 function drawPageContent(settings, contentType) {
-    let pc = document.getElementById(id_td_pageContent);
+    let pc = document.getElementById(id_td.pageContent);
 
     switch (contentType) {
-        case pageContent_logIn:
+        case pageContent.logIn:
             drawPageContent_LogIn(settings, pc);
             return;
 
-        case pageContent_register:
+        case pageContent.register:
             drawPageContent_Register(settings, pc);
             return;
 
@@ -441,7 +448,8 @@ function drawPageContent_LogIn(settings, pc) {
         </td>
     </tr>
 </table>`;
-    let tbl = document.getElementById(id_table_logIn);
+
+    let tbl = document.getElementById(id_table.logIn);
     for (let i = 0; i < tbl.rows.length; i++) {
         if (i > 2) {
             hideElement(tbl.rows[i]);
@@ -516,7 +524,8 @@ function drawPageContent_Register(settings, pc) {
         </td>
     </tr>
 </table>`;
-    let tbl = document.getElementById(id_table_register);
+    
+    let tbl = document.getElementById(id_table.register);
     for (let i = 0; i < tbl.rows.length; i++) {
         if (i > 5) {
             hideElement(tbl.rows[i]);
@@ -604,7 +613,7 @@ async function on_log_in_proceed_2_click(e) {
         return;
     }
 
-    await redirectPage(true, rootPath);
+    await redirectPage(true, path.root);
 }
 
 async function on_register_proceed_1_click(e) {
@@ -688,5 +697,5 @@ async function on_register_proceed_2_click(e) {
         return;
     }
 
-    await redirectPage(true, rootPath);
+    await redirectPage(true, path.root);
 }
