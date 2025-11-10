@@ -12,7 +12,7 @@ require (
 	github.com/vault-thirteen/RingCaptcha v0.11.6
 	github.com/vault-thirteen/Simple-File-Server v0.16.6
 	github.com/vault-thirteen/auxie v0.30.0
-	golang.org/x/sys v0.37.0
+	golang.org/x/sys v0.38.0
 	golang.org/x/term v0.36.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.1
