@@ -24,7 +24,10 @@ const url_parameter =
 
 // Action pages.
 const ActionPage = {
+    ChangeEmail: "change-email", //TODO
+    ChangePassword: "change-password",//TODO
     LogIn: "log-in",
+    LogOut: "log-out",
     Register: "register",
 };
 
@@ -69,10 +72,16 @@ const Err = {
 // Action names.
 const ActionName = {
     // AuthService.
+    ConfirmEmailChange: "confirmEmailChange",
+    ConfirmPasswordChange: "confirmPasswordChange",
     ConfirmLogIn: "confirmLogIn",
+    ConfirmLogOut: "confirmLogOut",
     ConfirmRegistration: "confirmRegistration",
     GetSelfRoles: "getSelfRoles",
+    StartEmailChange: "startEmailChange",
     StartLogIn: "startLogIn",
+    StartLogOut: "startLogOut",
+    StartPasswordChange: "startPasswordChange",
     StartRegistration: "startRegistration",
 
     // MessageService.
@@ -155,6 +164,13 @@ async function sendApiRequestAndGetResult(reqData) {
     return jo.result;
 }
 
+function isSuccessfulResult(result) {
+    if (result.ok === true) {
+        return true;
+    }
+    return false;
+}
+
 function composeErrorText(errMsg) {
     return Msg.GenericErrorPrefix + errMsg.trim() + ".";
 }
@@ -222,6 +238,19 @@ async function confirmLogIn(requestId, captchaAnswer, verificationCode, authData
     return await sendApiRequestAndGetResult(reqData);
 }
 
+class Parameters_ConfirmLogOut {
+    constructor(requestId, areYouSure) {
+        this.requestId = requestId;
+        this.areYouSure = areYouSure;
+    }
+}
+
+async function confirmLogOut(requestId, areYouSure) {
+    let params = new Parameters_ConfirmLogOut(requestId, areYouSure);
+    let reqData = new ApiRequest(ActionName.ConfirmLogOut, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
 class Parameters_ConfirmRegistration {
     constructor(requestId, captchaAnswer, verificationCode) {
         this.requestId = requestId;
@@ -250,6 +279,11 @@ class Parameters_StartLogIn {
 async function startLogIn(email) {
     let params = new Parameters_StartLogIn(email);
     let reqData = new ApiRequest(ActionName.StartLogIn, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+async function startLogOut() {
+    let reqData = new ApiRequest(ActionName.StartLogOut, {});
     return await sendApiRequestAndGetResult(reqData);
 }
 

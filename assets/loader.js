@@ -37,6 +37,7 @@ const id_td =
 const id_table =
     {
         logIn: "logIn",
+        logOut: "logOut",
         register: "register",
     };
 
@@ -44,8 +45,43 @@ const id_table =
 const pageContent =
     {
         logIn: "logIn",
+        logOut: "logOut",
         register: "reg",
     };
+
+class InteractiveTable {
+    constructor(table) {
+        this.table = table;
+    }
+
+    getFieldValue(i) {
+        return this.table.rows[i].children[1].children[0].value;
+    }
+
+    getFieldCheckedState(i) {
+        return this.table.rows[i].children[1].children[0].checked;
+    }
+
+    setFieldValue(i, value) {
+        this.table.rows[i].children[1].children[0].value = value;
+    }
+
+    disableField(i) {
+        disableElement(this.table.rows[i].children[1].children[0]);
+    }
+
+    hideRow(i) {
+        hideElement(this.table.rows[i]);
+    }
+
+    showRow(i) {
+        showElement(this.table.rows[i]);
+    }
+
+    setImage(i, src) {
+        this.table.rows[i].children[1].children[0].src = src;
+    }
+}
 
 // Common basic functions.
 
@@ -279,6 +315,10 @@ async function onPageLoad() {
             drawPageContent(settings, pageContent.logIn);
             return;
 
+        case ActionPage.LogOut:
+            drawPageContent(settings, pageContent.logOut);
+            return;
+
         case ActionPage.Register:
             drawPageContent(settings, pageContent.register);
             return;
@@ -375,6 +415,10 @@ function drawPageContent(settings, contentType) {
             drawPageContent_LogIn(settings, pc);
             return;
 
+        case pageContent.logOut:
+            drawPageContent_LogOut(settings, pc);
+            return;
+
         case pageContent.register:
             drawPageContent_Register(settings, pc);
             return;
@@ -457,6 +501,46 @@ function drawPageContent_LogIn(settings, pc) {
     }
 }
 
+function drawPageContent_LogOut(settings, pc) {
+    pc.innerHTML = `
+<table id="logOut">
+    <tr>
+        <td colspan="2">
+            If you really want to log out of the system, confirm you decision. <br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="button" name="log_out_proceed_1" value=" Proceed " onClick="on_log_out_proceed_1_click(this)"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Request ID</td>
+        <td>
+            <input type="text" name="request_id"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Are you sure</td>
+        <td>
+            <input type="checkbox" name="are_you_sure"/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="button" name="log_in_proceed_2" value=" Proceed " onClick="on_log_out_proceed_2_click(this)"/>
+        </td>
+    </tr>
+</table>`;
+
+    let tbl = document.getElementById(id_table.logOut);
+    for (let i = 0; i < tbl.rows.length; i++) {
+        if (i > 1) {
+            hideElement(tbl.rows[i]);
+        }
+    }
+}
+
 function drawPageContent_Register(settings, pc) {
     pc.innerHTML = `
 <table id="register">
@@ -524,7 +608,7 @@ function drawPageContent_Register(settings, pc) {
         </td>
     </tr>
 </table>`;
-    
+
     let tbl = document.getElementById(id_table.register);
     for (let i = 0; i < tbl.rows.length; i++) {
         if (i > 5) {
@@ -536,54 +620,50 @@ function drawPageContent_Register(settings, pc) {
 // Event handlers.
 
 async function on_log_in_proceed_1_click(e) {
-    let tbl = e.parentNode.parentNode.parentNode;
-    let email = tbl.rows[1].children[1].children[0].value;
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+    let email = it.getFieldValue(1);
+
+    // Check data.
     let ok = validateEmailAddress(email);
     if (!ok) {
         console.error(Err.EmailAddressIsNotValid);
         return;
     }
 
+    // Work.
     let res = await startLogIn(email);
     if (res == null) {
         return;
     }
 
-    // E-Mail address now can not be changed.
-    disableElement(tbl.rows[1].children[1].children[0]);
-
-    tbl.rows[8].children[1].children[0].value = res.requestId;
-    tbl.rows[9].children[1].children[0].value = res.authData;
-    let captchaId = res.captchaId;
-
-    for (let i = 0; i < tbl.rows.length; i++) {
-        if (i > 2) {
-            showElement(tbl.rows[i]);
-        }
-    }
-
-    // Hide the first button.
-    hideElement(tbl.rows[2]);
-
-    // Hide RequestId and AuthData.
-    hideElement(tbl.rows[8]);
-    disableElement(tbl.rows[8].children[1].children[0]);
-    hideElement(tbl.rows[9]);
-    disableElement(tbl.rows[9].children[1].children[0]);
-
-    // Show captcha image.
-    let captchaImg = tbl.rows[3].children[1].children[0];
-    captchaImg.src = makeUrl_CaptchaImage(captchaId);
+    // Show results.
+    it.disableField(1); // E-Mail.
+    it.hideRow(2); // First button.
+    it.showRow(3); // Captcha image.
+    it.setImage(3, makeUrl_CaptchaImage(res.captchaId));
+    it.showRow(4); // Captcha Answer.
+    it.showRow(5); // Verification Code.
+    it.showRow(6); // Password.
+    it.showRow(7); // Second button.
+    it.setFieldValue(8, res.requestId); // RequestId.
+    it.disableField(8);
+    it.hideRow(8);
+    it.setFieldValue(9, res.authData); // AuthData.
+    it.disableField(9);
+    it.hideRow(9);
 }
 
 async function on_log_in_proceed_2_click(e) {
-    let tbl = e.parentNode.parentNode.parentNode;
-    let captchaAnswer = tbl.rows[4].children[1].children[0].value;
-    let vCode = tbl.rows[5].children[1].children[0].value;
-    let pwd = tbl.rows[6].children[1].children[0].value;
-    let requestId = tbl.rows[8].children[1].children[0].value;
-    let saltBA = base64ToByteArray(tbl.rows[9].children[1].children[0].value);
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+    let captchaAnswer = it.getFieldValue(4);
+    let vCode = it.getFieldValue(5);
+    let pwd = it.getFieldValue(6);
+    let requestId = it.getFieldValue(8);
+    let saltBA = base64ToByteArray(it.getFieldValue(9));
 
+    // Check data.
     if (captchaAnswer.length === 0) {
         console.error(Err.CaptchaAnswerIsNotSet);
         return;
@@ -605,23 +685,79 @@ async function on_log_in_proceed_2_click(e) {
         return;
     }
 
+    // Prepare data.
     let keyBA = makeHashKey(pwd, saltBA);
     let authChallengeResponse = byteArrayToBase64(keyBA);
 
+    // Work.
     let res = await confirmLogIn(requestId, captchaAnswer, vCode, authChallengeResponse);
     if (res == null) {
         return;
     }
+    if (!isSuccessfulResult(res)) {
+        return;
+    }
 
+    // Show results.
+    await redirectPage(true, path.root);
+}
+
+async function on_log_out_proceed_1_click(e) {
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+
+    // Work.
+    let res = await startLogOut();
+    if (res == null) {
+        return;
+    }
+
+    // Show results.
+    it.hideRow(1); // First button.
+    it.setFieldValue(2, res.requestId); // RequestId.
+    it.disableField(2);
+    it.hideRow(2);
+    it.showRow(3); // Are you sure.
+    it.showRow(4); // Second button.
+}
+
+async function on_log_out_proceed_2_click(e) {
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+    let requestId = it.getFieldValue(2);
+    let areYouSure = it.getFieldCheckedState(3);
+
+    // Check data.
+    if (requestId.length === 0) {
+        console.error(Err.RequestIdIsNotSet);
+        return;
+    }
+    if (!areYouSure) {
+        return;
+    }
+
+    // Work.
+    let res = await confirmLogOut(requestId, areYouSure);
+    if (res == null) {
+        return;
+    }
+    if (!isSuccessfulResult(res)) {
+        return;
+    }
+
+    // Show results.
     await redirectPage(true, path.root);
 }
 
 async function on_register_proceed_1_click(e) {
-    let tbl = e.parentNode.parentNode.parentNode;
-    let name = tbl.rows[1].children[1].children[0].value;
-    let email = tbl.rows[2].children[1].children[0].value;
-    let password = tbl.rows[3].children[1].children[0].value;
-    let password2 = tbl.rows[4].children[1].children[0].value;
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+    let name = it.getFieldValue(1);
+    let email = it.getFieldValue(2);
+    let password = it.getFieldValue(3);
+    let password2 = it.getFieldValue(4);
+
+    // Check data.
     if (name.length === 0) {
         console.error(Err.NameIsNotSet);
         return;
@@ -640,45 +776,36 @@ async function on_register_proceed_1_click(e) {
         return;
     }
 
+    // Work.
     let res = await startRegistration(name, email, password);
     if (res == null) {
         return;
     }
 
-    // Name, E-Mail address and Password now can not be changed.
-    disableElement(tbl.rows[1].children[1].children[0]);
-    disableElement(tbl.rows[2].children[1].children[0]);
-    disableElement(tbl.rows[3].children[1].children[0]);
-    disableElement(tbl.rows[4].children[1].children[0]);
-
-    tbl.rows[10].children[1].children[0].value = res.requestId;
-    let captchaId = res.captchaId;
-
-    for (let i = 0; i < tbl.rows.length; i++) {
-        if (i > 5) {
-            showElement(tbl.rows[i]);
-        }
-    }
-
-    // Hide the first button.
-    hideElement(tbl.rows[5]);
-
-    // Hide RequestId.
-    hideElement(tbl.rows[10]);
-    disableElement(tbl.rows[10].children[1].children[0]);
-
-    // Show captcha image.
-    let captchaImg = tbl.rows[6].children[1].children[0];
-    captchaImg.src = makeUrl_CaptchaImage(captchaId);
+    // Show results.
+    it.disableField(1); // Name.
+    it.disableField(2); // E-Mail.
+    it.disableField(3); // Password.
+    it.disableField(4); // Password #2.
+    it.hideRow(5); // First button.
+    it.showRow(6); // Captcha image.
+    it.setImage(6, makeUrl_CaptchaImage(res.captchaId));
+    it.showRow(7); // Captcha answer.
+    it.showRow(8); // Verification Code.
+    it.showRow(9); // Second button.
+    it.setFieldValue(10, res.requestId); // RequestId.
+    it.disableField(10);
+    it.hideRow(10);
 }
 
 async function on_register_proceed_2_click(e) {
-    let tbl = e.parentNode.parentNode.parentNode;
-    let captchaAnswer = tbl.rows[7].children[1].children[0].value;
-    let vCode = tbl.rows[8].children[1].children[0].value;
-    let requestId = tbl.rows[10].children[1].children[0].value;
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+    let captchaAnswer = it.getFieldValue(7);
+    let vCode = it.getFieldValue(8);
+    let requestId = it.getFieldValue(10);
 
-
+    // Check data.
     if (captchaAnswer.length === 0) {
         console.error(Err.CaptchaAnswerIsNotSet);
         return;
@@ -692,10 +819,15 @@ async function on_register_proceed_2_click(e) {
         return;
     }
 
+    // Work.
     let res = await confirmRegistration(requestId, captchaAnswer, vCode);
     if (res == null) {
         return;
     }
+    if (!isSuccessfulResult(res)) {
+        return;
+    }
 
+    // Show results.
     await redirectPage(true, path.root);
 }

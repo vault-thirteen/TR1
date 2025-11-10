@@ -1,0 +1,8 @@
+ChangePassword:
+	1. StartPasswordChange
+	2. ConfirmPasswordChange
+
+
+ChangeEmail:
+	1. StartEmailChange
+	2. ConfirmEmailChange
