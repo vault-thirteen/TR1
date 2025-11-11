@@ -24,7 +24,7 @@ const url_parameter =
 
 // Action pages.
 const ActionPage = {
-    ChangeEmail: "change-email", //TODO
+    ChangeEmail: "change-email",
     ChangePassword: "change-password",
     LogIn: "log-in",
     LogOut: "log-out",
@@ -223,6 +223,16 @@ class Password {
 
 // AuthService.
 
+class Parameters_ConfirmEmailChange {
+    constructor(requestId, captchaAnswer, verificationCodeA, verificationCodeB, authData) {
+        this.requestId = requestId;
+        this.captchaAnswer = captchaAnswer;
+        this.verificationCodeA = verificationCodeA;
+        this.verificationCodeB = verificationCodeB;
+        this.authData = authData;
+    }
+}
+
 class Parameters_ConfirmLogIn {
     constructor(requestId, captchaAnswer, verificationCode, authData) {
         this.requestId = requestId;
@@ -256,6 +266,12 @@ class Parameters_ConfirmRegistration {
     }
 }
 
+class Parameters_StartEmailChange {
+    constructor(newEmail) {
+        this.newEmail = newEmail;
+    }
+}
+
 class Parameters_StartLogIn {
     constructor(email) {
         this.user = new User(0, "", email);
@@ -273,6 +289,12 @@ class Parameters_StartRegistration {
     constructor(name, email, password) {
         this.user = new User(0, name, email, password);
     }
+}
+
+async function confirmEmailChange(requestId, captchaAnswer, verificationCodeA, verificationCodeB, authData) {
+    let params = new Parameters_ConfirmEmailChange(requestId, captchaAnswer, verificationCodeA, verificationCodeB, authData);
+    let reqData = new ApiRequest(ActionName.ConfirmEmailChange, params);
+    return await sendApiRequestAndGetResult(reqData);
 }
 
 async function confirmLogIn(requestId, captchaAnswer, verificationCode, authData) {
@@ -301,6 +323,12 @@ async function confirmRegistration(requestId, captchaAnswer, verificationCode) {
 
 async function getSelfRoles() {
     let reqData = new ApiRequest(ActionName.GetSelfRoles, {});
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+async function startEmailChange(newEmail) {
+    let params = new Parameters_StartEmailChange(newEmail);
+    let reqData = new ApiRequest(ActionName.StartEmailChange, params);
     return await sendApiRequestAndGetResult(reqData);
 }
 

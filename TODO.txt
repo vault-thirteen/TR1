@@ -1,3 +1,0 @@
-ChangeEmail:
-	1. StartEmailChange
-	2. ConfirmEmailChange
