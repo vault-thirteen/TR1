@@ -36,6 +36,7 @@ const id_td =
 // IDs of various sections.
 const id_table =
     {
+        changePassword: "changePassword",
         logIn: "logIn",
         logOut: "logOut",
         register: "register",
@@ -44,9 +45,11 @@ const id_table =
 // Page content types.
 const pageContent =
     {
+        changePassword: "changePassword",
         logIn: "logIn",
         logOut: "logOut",
-        register: "reg",
+        mainPage: "mainPage",
+        register: "register",
     };
 
 class InteractiveTable {
@@ -322,6 +325,10 @@ async function onPageLoad() {
         case ActionPage.Register:
             drawPageContent(settings, pageContent.register);
             return;
+
+        case ActionPage.ChangePassword:
+            drawPageContent(settings, pageContent.changePassword);
+            return;
     }
 
     //TODO
@@ -337,9 +344,13 @@ async function onPageLoad() {
     console.log(selfRoles);
 
     switch (ap) {
+        case null:
+            drawPageContent(settings, pageContent.mainPage);
+            return;
+
         default:
             console.error(Err.UnknownActionPage, ap);
-            return
+            return;
     }
 }
 
@@ -421,6 +432,10 @@ function drawPageContent(settings, contentType) {
 
         case pageContent.register:
             drawPageContent_Register(settings, pc);
+            return;
+
+        case pageContent.changePassword:
+            drawPageContent_ChangePassword(settings, pc);
             return;
 
         default:
@@ -541,6 +556,82 @@ function drawPageContent_LogOut(settings, pc) {
     }
 }
 
+function drawPageContent_ChangePassword(settings, pc) {
+    pc.innerHTML = `
+<table id="changePassword">
+    <tr>
+        <td colspan="2">
+            Fill the form below to change your password.
+        </td>
+    </tr>
+    <tr>
+        <td>Current password</td>
+        <td>
+            <input type="password" name="cur_pwd"/>
+        </td>
+    </tr>
+    <tr>
+        <td>New password</td>
+        <td>
+            <input type="password" name="new_pwd_1"/>
+        </td>
+    </tr>
+    <tr>
+        <td>New password (again)</td>
+        <td>
+            <input type="password" name="new_pwd_2"/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="button" name="change_password_proceed_1" value=" Proceed " onClick="on_change_password_proceed_1_click(this)"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Captcha Question</td>
+        <td>
+            <img alt="captcha_question" src=""/>
+        </td>
+    </tr>
+    <tr>
+        <td>Captcha Answer</td>
+        <td>
+            <input type="text" name="captcha_answer"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Verification Code</td>
+        <td>
+            <input type="text" name="verification_code"/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="button" name="change_password_proceed_2" value=" Proceed " onClick="on_change_password_proceed_2_click(this)"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Request ID</td>
+        <td>
+            <input type="text" name="request_id"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Auth data</td>
+        <td>
+            <input type="text" name="auth_data"/>
+        </td>
+    </tr>
+</table>`;
+
+    let tbl = document.getElementById(id_table.changePassword);
+    for (let i = 0; i < tbl.rows.length; i++) {
+        if (i > 4) {
+            hideElement(tbl.rows[i]);
+        }
+    }
+}
+
 function drawPageContent_Register(settings, pc) {
     pc.innerHTML = `
 <table id="register">
@@ -618,6 +709,94 @@ function drawPageContent_Register(settings, pc) {
 }
 
 // Event handlers.
+
+async function on_change_password_proceed_1_click(e) {
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+    let newPassword = it.getFieldValue(2);
+    let newPassword2 = it.getFieldValue(3);
+
+    // Check data.
+    if (newPassword !== newPassword2) {
+        console.error(Err.PasswordIsDifferent);
+        return;
+    }
+    if (!isPasswordAllowed(newPassword)) {
+        console.error(Err.PasswordIsNotAllowed);
+        return;
+    }
+
+    // Work.
+    let res = await startPasswordChange(newPassword, newPassword2);
+    if (res == null) {
+        return;
+    }
+
+    // Show results.
+    it.disableField(1); // Current password.
+    it.disableField(2); // New password.
+    it.disableField(3); // New password (again).
+    it.hideRow(4); // First button.
+    it.showRow(5); // Captcha image.
+    it.setImage(5, makeUrl_CaptchaImage(res.captchaId));
+    it.showRow(6); // Captcha answer.
+    it.showRow(7); // Verification Code.
+    it.showRow(8); // Second button.
+    it.setFieldValue(9, res.requestId); // RequestId.
+    it.disableField(9);
+    it.hideRow(9);
+    it.setFieldValue(10, res.authData); // AuthData.
+    it.disableField(10);
+    it.hideRow(10);
+}
+
+async function on_change_password_proceed_2_click(e) {
+    // Get input data.
+    let it = new InteractiveTable(e.parentNode.parentNode.parentNode);
+    let curPassword = it.getFieldValue(1);
+    let captchaAnswer = it.getFieldValue(6);
+    let vCode = it.getFieldValue(7);
+    let requestId = it.getFieldValue(9);
+    let saltBA = base64ToByteArray(it.getFieldValue(10));
+
+    // Check data.
+    if (curPassword.length === 0) {
+        console.error(Err.PasswordIsNotSet);
+        return;
+    }
+    if (!isPasswordAllowed(curPassword)) {
+        console.error(Err.PasswordIsNotAllowed);
+        return;
+    }
+    if (captchaAnswer.length === 0) {
+        console.error(Err.CaptchaAnswerIsNotSet);
+        return;
+    }
+    if (vCode.length === 0) {
+        console.error(Err.VerificationCodeIsNotSet);
+        return;
+    }
+    if (requestId.length === 0) {
+        console.error(Err.RequestIdIsNotSet);
+        return;
+    }
+
+    // Prepare data.
+    let keyBA = makeHashKey(curPassword, saltBA);
+    let authChallengeResponse = byteArrayToBase64(keyBA);
+
+    // Work.
+    let res = await confirmPasswordChange(requestId, captchaAnswer, vCode, authChallengeResponse);
+    if (res == null) {
+        return;
+    }
+    if (!isSuccessfulResult(res)) {
+        return;
+    }
+
+    // Show results.
+    await redirectPage(true, path.root);
+}
 
 async function on_log_in_proceed_1_click(e) {
     // Get input data.

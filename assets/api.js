@@ -25,7 +25,7 @@ const url_parameter =
 // Action pages.
 const ActionPage = {
     ChangeEmail: "change-email", //TODO
-    ChangePassword: "change-password",//TODO
+    ChangePassword: "change-password",
     LogIn: "log-in",
     LogOut: "log-out",
     Register: "register",
@@ -232,12 +232,6 @@ class Parameters_ConfirmLogIn {
     }
 }
 
-async function confirmLogIn(requestId, captchaAnswer, verificationCode, authData) {
-    let params = new Parameters_ConfirmLogIn(requestId, captchaAnswer, verificationCode, authData);
-    let reqData = new ApiRequest(ActionName.ConfirmLogIn, params);
-    return await sendApiRequestAndGetResult(reqData);
-}
-
 class Parameters_ConfirmLogOut {
     constructor(requestId, areYouSure) {
         this.requestId = requestId;
@@ -245,10 +239,13 @@ class Parameters_ConfirmLogOut {
     }
 }
 
-async function confirmLogOut(requestId, areYouSure) {
-    let params = new Parameters_ConfirmLogOut(requestId, areYouSure);
-    let reqData = new ApiRequest(ActionName.ConfirmLogOut, params);
-    return await sendApiRequestAndGetResult(reqData);
+class Parameters_ConfirmPasswordChange {
+    constructor(requestId, captchaAnswer, verificationCode, authData) {
+        this.requestId = requestId;
+        this.captchaAnswer = captchaAnswer;
+        this.verificationCode = verificationCode;
+        this.authData = authData;
+    }
 }
 
 class Parameters_ConfirmRegistration {
@@ -257,6 +254,43 @@ class Parameters_ConfirmRegistration {
         this.captchaAnswer = captchaAnswer;
         this.verificationCode = verificationCode;
     }
+}
+
+class Parameters_StartLogIn {
+    constructor(email) {
+        this.user = new User(0, "", email);
+    }
+}
+
+class Parameters_StartPasswordChange {
+    constructor(newPassword, newPassword2) {
+        this.newPassword = newPassword;
+        this.newPassword2 = newPassword2;
+    }
+}
+
+class Parameters_StartRegistration {
+    constructor(name, email, password) {
+        this.user = new User(0, name, email, password);
+    }
+}
+
+async function confirmLogIn(requestId, captchaAnswer, verificationCode, authData) {
+    let params = new Parameters_ConfirmLogIn(requestId, captchaAnswer, verificationCode, authData);
+    let reqData = new ApiRequest(ActionName.ConfirmLogIn, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+async function confirmLogOut(requestId, areYouSure) {
+    let params = new Parameters_ConfirmLogOut(requestId, areYouSure);
+    let reqData = new ApiRequest(ActionName.ConfirmLogOut, params);
+    return await sendApiRequestAndGetResult(reqData);
+}
+
+async function confirmPasswordChange(requestId, captchaAnswer, verificationCode, authData) {
+    let params = new Parameters_ConfirmPasswordChange(requestId, captchaAnswer, verificationCode, authData);
+    let reqData = new ApiRequest(ActionName.ConfirmPasswordChange, params);
+    return await sendApiRequestAndGetResult(reqData);
 }
 
 async function confirmRegistration(requestId, captchaAnswer, verificationCode) {
@@ -270,12 +304,6 @@ async function getSelfRoles() {
     return await sendApiRequestAndGetResult(reqData);
 }
 
-class Parameters_StartLogIn {
-    constructor(email) {
-        this.user = new User(0, "", email);
-    }
-}
-
 async function startLogIn(email) {
     let params = new Parameters_StartLogIn(email);
     let reqData = new ApiRequest(ActionName.StartLogIn, params);
@@ -287,10 +315,10 @@ async function startLogOut() {
     return await sendApiRequestAndGetResult(reqData);
 }
 
-class Parameters_StartRegistration {
-    constructor(name, email, password) {
-        this.user = new User(0, name, email, password);
-    }
+async function startPasswordChange(newPassword, newPassword2) {
+    let params = new Parameters_StartPasswordChange(newPassword, newPassword2);
+    let reqData = new ApiRequest(ActionName.StartPasswordChange, params);
+    return await sendApiRequestAndGetResult(reqData);
 }
 
 async function startRegistration(name, email, password) {
