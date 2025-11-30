@@ -1,6 +1,6 @@
 module github.com/vault-thirteen/TR1/src
 
-go 1.24.9
+go 1.24.10
 
 require (
 	github.com/go-sql-driver/mysql v1.9.3
@@ -11,7 +11,7 @@ require (
 	github.com/vault-thirteen/JSON-RPC-M1 v0.3.19
 	github.com/vault-thirteen/RingCaptcha v0.11.6
 	github.com/vault-thirteen/Simple-File-Server v0.16.6
-	github.com/vault-thirteen/auxie v0.30.0
+	github.com/vault-thirteen/auxie v0.31.0
 	golang.org/x/sys v0.38.0
 	golang.org/x/term v0.37.0
 	gorm.io/driver/mysql v1.6.0
@@ -26,7 +26,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	golang.org/x/crypto v0.43.0 // indirect
-	golang.org/x/image v0.32.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/image v0.33.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 )
