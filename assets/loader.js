@@ -459,63 +459,64 @@ function drawPageContent_ChangeEmail(settings, pc) {
 <table id="changeEmail">
     <tr>
         <td colspan="2">
-            Fill the form below to change your e-mail address.
+            Fill the form below to change your e-mail address. <br>
+            <br>
         </td>
     </tr>
     <tr>
-        <td>Current Password</td>
+        <td class="fieldName">Current Password</td>
         <td>
             <input type="password" name="cur_pwd"/>
         </td>
     </tr>
     <tr>
-        <td>New E-Mail</td>
+        <td class="fieldName">New E-Mail</td>
         <td>
             <input type="text" name="new_email"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="change_email_proceed_1" value=" Proceed " onClick="on_change_email_proceed_1_click(this)"/>
+            <input type="button" name="change_email_proceed_1" value=" Proceed " onClick="on_change_email_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Question</td>
+        <td class="fieldName">Captcha Question</td>
         <td>
             <img alt="captcha_question" src=""/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Answer</td>
+         <td class="fieldName">Captcha Answer</td>
         <td>
             <input type="text" name="captcha_answer"/>
         </td>
     </tr>
     <tr>
-        <td>Verification Code (old mail)</td>
+         <td class="fieldName">Verification Code (old mail)</td>
         <td>
             <input type="text" name="verification_code_old"/>
         </td>
     </tr>
     <tr>
-        <td>Verification Code (new mail)</td>
+         <td class="fieldName">Verification Code (new mail)</td>
         <td>
             <input type="text" name="verification_code_new"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="change_email_proceed_2" value=" Proceed " onClick="on_change_email_proceed_2_click(this)"/>
+            <input type="button" name="change_email_proceed_2" value=" Proceed " onClick="on_change_email_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Request ID</td>
+         <td class="fieldName">Request ID</td>
         <td>
             <input type="text" name="request_id"/>
         </td>
     </tr>
     <tr>
-        <td>Auth Data</td>
+         <td class="fieldName">Auth Data</td>
         <td>
             <input type="text" name="auth_data"/>
         </td>
@@ -535,63 +536,64 @@ function drawPageContent_ChangePassword(settings, pc) {
 <table id="changePassword">
     <tr>
         <td colspan="2">
-            Fill the form below to change your password.
+            Fill the form below to change your password. <br>
+            <br>
         </td>
     </tr>
     <tr>
-        <td>Current Password</td>
+         <td class="fieldName">Current Password</td>
         <td>
             <input type="password" name="cur_pwd"/>
         </td>
     </tr>
     <tr>
-        <td>New Password</td>
+         <td class="fieldName">New Password</td>
         <td>
             <input type="password" name="new_pwd_1"/>
         </td>
     </tr>
     <tr>
-        <td>New Password (again)</td>
+         <td class="fieldName">New Password (again)</td>
         <td>
             <input type="password" name="new_pwd_2"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="change_password_proceed_1" value=" Proceed " onClick="on_change_password_proceed_1_click(this)"/>
+            <input type="button" name="change_password_proceed_1" value=" Proceed " onClick="on_change_password_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Question</td>
+         <td class="fieldName">Captcha Question</td>
         <td>
             <img alt="captcha_question" src=""/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Answer</td>
+         <td class="fieldName">Captcha Answer</td>
         <td>
             <input type="text" name="captcha_answer"/>
         </td>
     </tr>
     <tr>
-        <td>Verification Code</td>
+         <td class="fieldName">Verification Code</td>
         <td>
             <input type="text" name="verification_code"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="change_password_proceed_2" value=" Proceed " onClick="on_change_password_proceed_2_click(this)"/>
+            <input type="button" name="change_password_proceed_2" value=" Proceed " onClick="on_change_password_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Request ID</td>
+         <td class="fieldName">Request ID</td>
         <td>
             <input type="text" name="request_id"/>
         </td>
     </tr>
     <tr>
-        <td>Auth Data</td>
+         <td class="fieldName">Auth Data</td>
         <td>
             <input type="text" name="auth_data"/>
         </td>
@@ -614,56 +616,57 @@ function drawPageContent_LogIn(settings, pc) {
             In order to use this website, you must be logged into the system. <br>
             If you have no account, <a href="/?a=register">click here</a> to register one. <br>
             If you have an account, log in using the form below. <br>
+            <br>
         </td>
     </tr>
     <tr>
-        <td>E-Mail</td>
+         <td class="fieldName">E-Mail</td>
         <td>
             <input type="text" name="user_email"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="log_in_proceed_1" value=" Proceed " onClick="on_log_in_proceed_1_click(this)"/>
+            <input type="button" name="log_in_proceed_1" value=" Proceed " onClick="on_log_in_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Question</td>
+         <td class="fieldName">Captcha Question</td>
         <td>
             <img alt="captcha_question" src=""/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Answer</td>
+         <td class="fieldName">Captcha Answer</td>
         <td>
             <input type="text" name="captcha_answer"/>
         </td>
     </tr>
     <tr>
-        <td>Verification Code</td>
+         <td class="fieldName">Verification Code</td>
         <td>
             <input type="text" name="verification_code"/>
         </td>
     </tr>
     <tr>
-        <td>Password</td>
+         <td class="fieldName">Password</td>
         <td>
             <input type="password" name="user_pwd"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="log_in_proceed_2" value=" Proceed " onClick="on_log_in_proceed_2_click(this)"/>
+            <input type="button" name="log_in_proceed_2" value=" Proceed " onClick="on_log_in_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Request ID</td>
+         <td class="fieldName">Request ID</td>
         <td>
             <input type="text" name="request_id"/>
         </td>
     </tr>
     <tr>
-        <td>Auth Data</td>
+         <td class="fieldName">Auth Data</td>
         <td>
             <input type="text" name="auth_data"/>
         </td>
@@ -684,28 +687,29 @@ function drawPageContent_LogOut(settings, pc) {
     <tr>
         <td colspan="2">
             If you really want to log out of the system, confirm you decision. <br>
+            <br>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="log_out_proceed_1" value=" Proceed " onClick="on_log_out_proceed_1_click(this)"/>
+            <input type="button" name="log_out_proceed_1" value=" Proceed " onClick="on_log_out_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Request ID</td>
+         <td class="fieldName">Request ID</td>
         <td>
             <input type="text" name="request_id"/>
         </td>
     </tr>
     <tr>
-        <td>Are you sure</td>
+         <td class="fieldName">Are you sure</td>
         <td>
             <input type="checkbox" name="are_you_sure"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="log_in_proceed_2" value=" Proceed " onClick="on_log_out_proceed_2_click(this)"/>
+            <input type="button" name="log_in_proceed_2" value=" Proceed " onClick="on_log_out_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
 </table>`;
@@ -723,63 +727,64 @@ function drawPageContent_Register(settings, pc) {
 <table id="register">
     <tr>
         <td colspan="2">
-            Fill the form below to register a new account.
+            Fill the form below to register a new account. <br>
+            <br>
         </td>
     </tr>
     <tr>
-        <td>Name</td>
+         <td class="fieldName">Name</td>
         <td>
             <input type="text" name="user_name"/>
         </td>
     </tr>
     <tr>
-        <td>E-Mail</td>
+         <td class="fieldName">E-Mail</td>
         <td>
             <input type="text" name="user_email"/>
         </td>
     </tr>
     <tr>
-        <td>Password</td>
+         <td class="fieldName">Password</td>
         <td>
             <input type="password" name="user_pwd_1"/>
         </td>
     </tr>
     <tr>
-        <td>Password (again)</td>
+         <td class="fieldName">Password (again)</td>
         <td>
             <input type="password" name="user_pwd_2"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="register_proceed_1" value=" Proceed " onClick="on_register_proceed_1_click(this)"/>
+            <input type="button" name="register_proceed_1" value=" Proceed " onClick="on_register_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Question</td>
+         <td class="fieldName">Captcha Question</td>
         <td>
             <img alt="captcha_question" src=""/>
         </td>
     </tr>
     <tr>
-        <td>Captcha Answer</td>
+         <td class="fieldName">Captcha Answer</td>
         <td>
             <input type="text" name="captcha_answer"/>
         </td>
     </tr>
     <tr>
-        <td>Verification Code</td>
+         <td class="fieldName">Verification Code</td>
         <td>
             <input type="text" name="verification_code"/>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <input type="button" name="register_proceed_2" value=" Proceed " onClick="on_register_proceed_2_click(this)"/>
+            <input type="button" name="register_proceed_2" value=" Proceed " onClick="on_register_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
     <tr>
-        <td>Request ID</td>
+         <td class="fieldName">Request ID</td>
         <td>
             <input type="text" name="request_id"/>
         </td>
