@@ -26,6 +26,21 @@ table {
     border-spacing: 0;
 }
 
+.pageHeaderContainer,
+.pageContentContainer,
+.pageFooterContainer {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pageHeaderContainer {
+    margin-bottom: 4px;
+}
+
+.pageFooterContainer {
+    margin-top: 4px;
+}
+
 .pageHeader {
     color: grey;
     font-family: sans-serif;
