@@ -476,7 +476,7 @@ function drawPageContent_ChangeEmail(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="change_email_proceed_1" value=" Proceed " onClick="on_change_email_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -505,7 +505,7 @@ function drawPageContent_ChangeEmail(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="change_email_proceed_2" value=" Proceed " onClick="on_change_email_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -559,7 +559,7 @@ function drawPageContent_ChangePassword(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="change_password_proceed_1" value=" Proceed " onClick="on_change_password_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -582,7 +582,7 @@ function drawPageContent_ChangePassword(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="change_password_proceed_2" value=" Proceed " onClick="on_change_password_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -626,7 +626,7 @@ function drawPageContent_LogIn(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="log_in_proceed_1" value=" Proceed " onClick="on_log_in_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -655,7 +655,7 @@ function drawPageContent_LogIn(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="log_in_proceed_2" value=" Proceed " onClick="on_log_in_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -691,7 +691,7 @@ function drawPageContent_LogOut(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="log_out_proceed_1" value=" Proceed " onClick="on_log_out_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -708,7 +708,7 @@ function drawPageContent_LogOut(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="log_in_proceed_2" value=" Proceed " onClick="on_log_out_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -756,7 +756,7 @@ function drawPageContent_Register(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="register_proceed_1" value=" Proceed " onClick="on_register_proceed_1_click(this)" class="proceedButton"/>
         </td>
     </tr>
@@ -779,7 +779,7 @@ function drawPageContent_Register(settings, pc) {
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" class="taCenter">
             <input type="button" name="register_proceed_2" value=" Proceed " onClick="on_register_proceed_2_click(this)" class="proceedButton"/>
         </td>
     </tr>
