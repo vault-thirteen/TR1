@@ -6,11 +6,11 @@ require (
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/valord577/mailx v0.6.20240511
-	github.com/vault-thirteen/BytePackedPassword v0.4.4
-	github.com/vault-thirteen/Cache v0.17.9
-	github.com/vault-thirteen/JSON-RPC-M1 v0.3.22
-	github.com/vault-thirteen/RingCaptcha v0.11.9
-	github.com/vault-thirteen/Simple-File-Server v0.16.9
+	github.com/vault-thirteen/BytePackedPassword v0.4.5
+	github.com/vault-thirteen/Cache v0.17.10
+	github.com/vault-thirteen/JSON-RPC-M1 v0.3.23
+	github.com/vault-thirteen/RingCaptcha v0.11.10
+	github.com/vault-thirteen/Simple-File-Server v0.16.10
 	github.com/vault-thirteen/auxie v0.32.0
 	golang.org/x/sys v0.43.0
 	golang.org/x/term v0.42.0
