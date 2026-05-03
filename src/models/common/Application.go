@@ -10,8 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/vault-thirteen/TR1/src/interfaces"
 	ver "github.com/vault-thirteen/auxie/Versioneer/classes/Versioneer"
+
+	"github.com/vault-thirteen/TR1/src/interfaces"
 )
 
 const (
@@ -53,7 +54,7 @@ func NewApplication(serviceShortName string, serviceComponents []interfaces.ISer
 	}
 
 	var vi *ver.Versioneer
-	vi, err = ver.New()
+	vi, err = ver.New(false)
 	if err != nil {
 		return nil, err
 	}
